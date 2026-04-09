@@ -13,7 +13,7 @@ export default function ContactPage() {
         <div className="bg-white rounded-2xl border border-[#efe5da] p-6 sm:p-8 text-sm text-[#5a4535] leading-relaxed space-y-4">
           <p>つつみに関するご質問・ご要望・不具合の報告は、X（旧Twitter）のDMまでお気軽にご連絡ください。</p>
           <a
-            href="https://x.com/daichi_1208"
+            href="https://x.com/tsutsumi_app"
             target="_blank"
             rel="noopener noreferrer"
             className="flex items-center gap-3 bg-[#fef8f3] rounded-xl p-4 hover:bg-[#f5ede5] transition-colors"
@@ -24,7 +24,7 @@ export default function ContactPage() {
               </svg>
             </div>
             <div>
-              <p className="font-medium text-[#3a2519]">@daichi_1208</p>
+              <p className="font-medium text-[#3a2519]">@tsutsumi_app</p>
               <p className="text-xs text-[#b0a090]">DMでお気軽にどうぞ</p>
             </div>
           </a>
