@@ -4,6 +4,45 @@ const resend = new Resend(process.env.RESEND_API_KEY);
 
 const FROM_EMAIL = process.env.RESEND_FROM_EMAIL || "onboarding@resend.dev";
 
+export async function sendWelcomeEmail({
+  to,
+  name,
+}: {
+  to: string;
+  name: string;
+}) {
+  await resend.emails.send({
+    from: `つつみ <${FROM_EMAIL}>`,
+    to,
+    subject: "つつみへようこそ — 贈り物を、大切に包む。",
+    html: `
+      <div style="font-family: sans-serif; max-width: 480px; margin: 0 auto; padding: 24px;">
+        <h2 style="color: #3a2519; font-size: 20px;">ようこそ、${name}さん</h2>
+        <p style="color: #7a6050; font-size: 14px; line-height: 1.8;">
+          つつみへのご登録ありがとうございます。
+        </p>
+        <div style="background: #fef8f3; border-radius: 12px; padding: 16px; margin: 20px 0;">
+          <p style="margin: 0 0 8px; color: #3a2519; font-weight: bold; font-size: 14px;">つつみでできること</p>
+          <ul style="margin: 0; padding-left: 20px; color: #7a6050; font-size: 13px; line-height: 1.8;">
+            <li>贈答のやりとりをかんたん記録</li>
+            <li>お返し金額・時期を自動計算（全13種対応）</li>
+            <li>期限が近づいたらメールでお知らせ</li>
+            <li>グループを作ってパートナーと共有</li>
+          </ul>
+        </div>
+        <a href="https://tsutsumi.app/dashboard" style="display: inline-block; background: #c4826e; color: white; padding: 12px 24px; border-radius: 9999px; text-decoration: none; font-size: 14px; font-weight: bold;">
+          さっそく記録をつける →
+        </a>
+        <hr style="border: none; border-top: 1px solid #efe5da; margin: 24px 0;" />
+        <p style="color: #b0a090; font-size: 11px;">
+          つつみ — 贈り物を、大切に包む。<br />
+          <a href="https://tsutsumi.app" style="color: #c4826e;">tsutsumi.app</a>
+        </p>
+      </div>
+    `,
+  });
+}
+
 export async function sendReturnReminder({
   to,
   contactName,

@@ -10,6 +10,7 @@ import {
 } from "@/lib/return-rules";
 import { revalidatePath } from "next/cache";
 import crypto from "crypto";
+import { sendWelcomeEmail } from "@/lib/email";
 
 // ─── ユーザー同期 ───
 
@@ -23,18 +24,26 @@ export async function ensureUser() {
     const clerkUser = await currentUser();
     if (!clerkUser) throw new Error("Clerk user not found");
 
+    const name =
+      `${clerkUser.lastName ?? ""} ${clerkUser.firstName ?? ""}`.trim() ||
+      clerkUser.emailAddresses[0]?.emailAddress ||
+      "ユーザー";
+    const email = clerkUser.emailAddresses[0]?.emailAddress ?? "";
+
     user = await prisma.user.upsert({
       where: { clerkId: userId },
       update: {},
       create: {
         clerkId: userId,
-        name:
-          `${clerkUser.lastName ?? ""} ${clerkUser.firstName ?? ""}`.trim() ||
-          clerkUser.emailAddresses[0]?.emailAddress ||
-          "ユーザー",
-        email: clerkUser.emailAddresses[0]?.emailAddress ?? "",
+        name,
+        email,
       },
     });
+
+    // ウェルカムメール送信（失敗してもブロックしない）
+    if (email) {
+      sendWelcomeEmail({ to: email, name }).catch(() => {});
+    }
   }
 
   return user;
