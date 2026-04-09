@@ -18,7 +18,9 @@ export default async function SignInPage({
         </Link>
       </div>
       <div className="flex-1 flex items-center justify-center">
-        <SignIn fallbackRedirectUrl={redirect_url || "/dashboard"} />
+        <SignIn
+        forceRedirectUrl={redirect_url || "/dashboard"}
+      />
       </div>
     </div>
   );
