@@ -1,8 +1,12 @@
 import { Resend } from "resend";
 
-const resend = new Resend(process.env.RESEND_API_KEY);
+function getResend() {
+  return new Resend(process.env.RESEND_API_KEY);
+}
 
-const FROM_EMAIL = process.env.RESEND_FROM_EMAIL || "onboarding@resend.dev";
+function getFromEmail() {
+  return process.env.RESEND_FROM_EMAIL || "onboarding@resend.dev";
+}
 
 export async function sendWelcomeEmail({
   to,
@@ -11,8 +15,8 @@ export async function sendWelcomeEmail({
   to: string;
   name: string;
 }) {
-  await resend.emails.send({
-    from: `つつみ <${FROM_EMAIL}>`,
+  await getResend().emails.send({
+    from: `つつみ <${getFromEmail()}>`,
     to,
     subject: "つつみへようこそ — 贈り物を、大切に包む。",
     html: `
@@ -64,8 +68,8 @@ export async function sendReturnReminder({
     day: "numeric",
   });
 
-  await resend.emails.send({
-    from: `つつみ <${FROM_EMAIL}>`,
+  await getResend().emails.send({
+    from: `つつみ <${getFromEmail()}>`,
     to,
     subject: `【つつみ】${contactName}さんへのお返し期限が近づいています`,
     html: `
