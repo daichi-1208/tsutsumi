@@ -1,0 +1,107 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// ユーザー（Clerk連携）
+model User {
+  id        String   @id @default(uuid())
+  clerkId   String   @unique @map("clerk_id")
+  name      String
+  email     String
+  createdAt DateTime @default(now()) @map("created_at")
+
+  contacts     Contact[]
+  records      Record[]
+  ownedGroups  Group[]       @relation("GroupOwner")
+  memberships  GroupMember[]
+
+  @@map("users")
+}
+
+// 共有グループ（将来の課金要素）
+model Group {
+  id         String   @id @default(uuid())
+  name       String   // 「鈴木家」等
+  inviteCode String   @unique @map("invite_code")
+  ownerId    String   @map("owner_id")
+  createdAt  DateTime @default(now()) @map("created_at")
+
+  owner    User          @relation("GroupOwner", fields: [ownerId], references: [id])
+  members  GroupMember[]
+  contacts Contact[]
+  records  Record[]
+
+  @@map("groups")
+}
+
+// グループメンバー
+model GroupMember {
+  id       String   @id @default(uuid())
+  groupId  String   @map("group_id")
+  userId   String   @map("user_id")
+  joinedAt DateTime @default(now()) @map("joined_at")
+
+  group Group @relation(fields: [groupId], references: [id])
+  user  User  @relation(fields: [userId], references: [id])
+
+  @@unique([groupId, userId])
+  @@map("group_members")
+}
+
+// 贈答相手
+model Contact {
+  id           String   @id @default(uuid())
+  userId       String   @map("user_id")
+  groupId      String?  @map("group_id")
+  name         String
+  relationship String?
+  gender       String?
+  memo         String?
+  createdAt    DateTime @default(now()) @map("created_at")
+
+  user    User     @relation(fields: [userId], references: [id])
+  group   Group?   @relation(fields: [groupId], references: [id])
+  records Record[]
+
+  @@map("contacts")
+}
+
+// 贈答記録
+model Record {
+  id            String       @id @default(uuid())
+  userId        String       @map("user_id")
+  groupId       String?      @map("group_id")
+  contactId     String       @map("contact_id")
+  type          RecordType
+  eventType     String       @map("event_type")
+  amount        Int?
+  itemName      String?      @map("item_name")
+  date          DateTime     @db.Date
+  returnStatus  ReturnStatus @default(PENDING) @map("return_status")
+  returnDueDate DateTime?    @map("return_due_date") @db.Date
+  returnAmount  Int?         @map("return_amount")
+  memo          String?
+  createdAt     DateTime     @default(now()) @map("created_at")
+
+  user    User    @relation(fields: [userId], references: [id])
+  group   Group?  @relation(fields: [groupId], references: [id])
+  contact Contact @relation(fields: [contactId], references: [id])
+
+  @@map("records")
+}
+
+enum RecordType {
+  RECEIVED
+  GIVEN
+}
+
+enum ReturnStatus {
+  NOT_NEEDED
+  PENDING
+  COMPLETED
+}
