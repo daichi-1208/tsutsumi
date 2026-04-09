@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { ClerkProvider } from "@clerk/nextjs";
+import { Analytics } from "@vercel/analytics/next";
 import { jaJP } from "@clerk/localizations";
 import { Noto_Sans_JP } from "next/font/google";
 import "./globals.css";
@@ -51,7 +52,10 @@ export default function RootLayout({
   return (
     <ClerkProvider localization={jaJP}>
       <html lang="ja" className={`${notoSansJP.variable} h-full antialiased`}>
-        <body className="min-h-full flex flex-col">{children}</body>
+        <body className="min-h-full flex flex-col">
+          {children}
+          <Analytics />
+        </body>
       </html>
     </ClerkProvider>
   );
