@@ -6,7 +6,7 @@ export default function ContactPage() {
     <div className="min-h-screen bg-[#faf6f1]">
       <div className="max-w-2xl mx-auto px-5 py-10">
         <Link href="/" className="inline-flex items-center gap-2 text-sm text-[#c4826e] hover:underline mb-8">
-          <Image src="/logo.png" alt="つつみ" width={20} height={20} className="w-5 h-5 rounded" />
+          <Image src="/logo.webp" alt="つつみ" width={20} height={20} className="w-5 h-5 rounded" />
           トップに戻る
         </Link>
         <h1 className="text-2xl font-bold text-[#3a2519] mb-6">お問い合わせ</h1>

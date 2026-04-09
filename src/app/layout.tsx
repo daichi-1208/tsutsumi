@@ -21,8 +21,8 @@ export const metadata: Metadata = {
   description:
     "「誰にいくらもらった？お返しいつ？」を解決する贈答お付き合い管理アプリ。パートナーと共有して、大切な人との贈り物を忘れない。",
   icons: {
-    icon: "/logo.png",
-    apple: "/logo.png",
+    icon: "/logo.webp",
+    apple: "/logo.webp",
   },
   openGraph: {
     title: "つつみ — 贈り物を、大切に包む。",
@@ -32,14 +32,14 @@ export const metadata: Metadata = {
     siteName: "つつみ",
     locale: "ja_JP",
     type: "website",
-    images: [{ url: "/hero-furoshiki.png", width: 1200, height: 630 }],
+    images: [{ url: "/hero-furoshiki.webp", width: 1200, height: 630 }],
   },
   twitter: {
     card: "summary_large_image",
     title: "つつみ — 贈り物を、大切に包む。",
     description:
       "現金もギフトも、記録するだけでお返し時期と金額を教えてくれる。",
-    images: ["/hero-furoshiki.png"],
+    images: ["/hero-furoshiki.webp"],
   },
 };
 

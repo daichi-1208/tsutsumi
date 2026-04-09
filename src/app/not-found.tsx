@@ -7,7 +7,7 @@ export default function NotFound() {
     <div className="min-h-screen flex items-center justify-center bg-[#faf6f1] px-5">
       <div className="text-center">
         <Image
-          src="/logo.png"
+          src="/logo.webp"
           alt="つつみ"
           width={64}
           height={64}

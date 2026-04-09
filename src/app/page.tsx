@@ -102,7 +102,7 @@ export default function LandingPage() {
       <header className="sticky top-0 z-50 bg-[#faf6f1]/85 backdrop-blur-md border-b border-[#e8ddd0]">
         <div className="max-w-5xl mx-auto px-5 h-16 flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <Image src="/logo.png" alt="つつみ" width={32} height={32} className="w-8 h-8 rounded-xl" />
+            <Image src="/logo.webp" alt="つつみ" width={32} height={32} className="w-8 h-8 rounded-xl" />
             <span className="text-lg font-bold tracking-tight text-[#4a3228]">
               つつみ
             </span>
@@ -187,7 +187,7 @@ export default function LandingPage() {
                 <div className="absolute -inset-6 bg-gradient-to-br from-[#c4826e]/20 to-[#d4a088]/10 rounded-[2rem] blur-3xl" />
                 <div className="absolute -inset-1 bg-gradient-to-br from-[#c4826e]/15 to-transparent rounded-2xl" />
                 <Image
-                  src="/hero-furoshiki.png"
+                  src="/hero-furoshiki.webp"
                   alt="風呂敷に丁寧に包まれた贈り物"
                   width={920}
                   height={518}
@@ -290,7 +290,7 @@ export default function LandingPage() {
               <div className="absolute -inset-4 bg-[#c4826e]/15 rounded-[2rem] blur-2xl" />
               <div className="relative rounded-2xl overflow-hidden ring-1 ring-white/15 shadow-2xl shadow-black/30">
                 <Image
-                  src="/couple-wrapping.png"
+                  src="/couple-wrapping.webp"
                   alt="パートナーと一緒に贈り物を包む"
                   width={920}
                   height={518}
@@ -526,7 +526,7 @@ export default function LandingPage() {
         {/* 水彩画像を全幅背景に — しっかり見せる */}
         <div className="absolute inset-0">
           <Image
-            src="/watercolor-gift.png"
+            src="/watercolor-gift.webp"
             alt=""
             fill
             className="object-cover scale-110"
@@ -538,7 +538,7 @@ export default function LandingPage() {
         {/* グラスモーフィズムカード */}
         <div className="relative max-w-2xl mx-auto">
           <div className="bg-white/70 backdrop-blur-xl rounded-3xl p-8 md:p-12 shadow-2xl shadow-[#3a2519]/8 border border-white/80 text-center">
-            <Image src="/logo.png" alt="つつみ" width={80} height={80} className="w-20 h-20 mx-auto mb-6 rounded-3xl drop-shadow-lg" />
+            <Image src="/logo.webp" alt="つつみ" width={80} height={80} className="w-20 h-20 mx-auto mb-6 rounded-3xl drop-shadow-lg" />
             <h2 className="text-3xl md:text-4xl font-bold mb-4 text-[#3a2519] leading-tight">
               大切な人とのお付き合いを、
               <br />
@@ -582,7 +582,7 @@ export default function LandingPage() {
         <div className="max-w-5xl mx-auto">
           <div className="flex flex-col md:flex-row justify-between items-center gap-6">
             <div className="flex items-center gap-3">
-              <Image src="/logo.png" alt="つつみ" width={28} height={28} className="w-7 h-7 rounded-lg" />
+              <Image src="/logo.webp" alt="つつみ" width={28} height={28} className="w-7 h-7 rounded-lg" />
               <div>
                 <span className="font-bold text-[#3a2519]">つつみ</span>
                 <span className="text-sm text-[#7a6050] ml-2">

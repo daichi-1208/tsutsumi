@@ -52,7 +52,7 @@ export default async function InvitePage({
     <div className="min-h-screen flex items-center justify-center bg-[#faf6f1] px-5">
       <div className="bg-white rounded-2xl border border-[#efe5da] p-8 max-w-sm text-center">
         <Image
-          src="/logo.png"
+          src="/logo.webp"
           alt="つつみ"
           width={64}
           height={64}

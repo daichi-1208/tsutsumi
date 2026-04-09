@@ -20,7 +20,7 @@ export default async function DashboardLayout({
           <div className="flex items-center gap-6">
             <Link href="/dashboard" className="flex items-center gap-2">
               <Image
-                src="/logo.png"
+                src="/logo.webp"
                 alt="つつみ"
                 width={28}
                 height={28}
