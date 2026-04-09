@@ -30,18 +30,20 @@ export async function ensureUser() {
       "ユーザー";
     const email = clerkUser.emailAddresses[0]?.emailAddress ?? "";
 
-    user = await prisma.user.upsert({
-      where: { clerkId: userId },
-      update: {},
-      create: {
-        clerkId: userId,
-        name,
-        email,
-      },
-    });
+    // createで作成試行。既に存在する場合（並行リクエスト）はfindUniqueにフォールバック
+    let isNewUser = false;
+    try {
+      user = await prisma.user.create({
+        data: { clerkId: userId, name, email },
+      });
+      isNewUser = true;
+    } catch {
+      user = await prisma.user.findUnique({ where: { clerkId: userId } });
+      if (!user) throw new Error("User creation failed");
+    }
 
-    // ウェルカムメール送信（失敗してもブロックしない）
-    if (email) {
+    // ウェルカムメール（新規作成時のみ。重複送信を防ぐ）
+    if (isNewUser && email) {
       sendWelcomeEmail({ to: email, name }).catch(() => {});
     }
   }
