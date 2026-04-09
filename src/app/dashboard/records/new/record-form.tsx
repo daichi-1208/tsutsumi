@@ -58,7 +58,8 @@ export function RecordForm({
   async function handleNewContact(formData: FormData) {
     if (groupId) formData.set("groupId", groupId);
     startTransition(async () => {
-      await createContact(formData);
+      const newContact = await createContact(formData);
+      setContactId(newContact.id);
       setDialogOpen(false);
       router.refresh();
     });

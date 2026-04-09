@@ -91,7 +91,7 @@ export async function createContact(formData: FormData) {
 
   if (!name?.trim()) throw new Error("名前は必須です");
 
-  await prisma.contact.create({
+  const contact = await prisma.contact.create({
     data: {
       userId: user.id,
       groupId: groupId || null,
@@ -104,6 +104,8 @@ export async function createContact(formData: FormData) {
 
   revalidatePath("/dashboard");
   revalidatePath("/dashboard/contacts");
+
+  return contact;
 }
 
 export async function getContact(id: string) {
