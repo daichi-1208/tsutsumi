@@ -18,6 +18,9 @@ export const viewport: Viewport = {
 };
 
 export const metadata: Metadata = {
+  verification: {
+    google: "BcXjRAGx3Zk0xdHGzJjLD1WfvatW-mjOr9pOxBswKT8",
+  },
   title: "つつみ — 贈り物を、大切に包む。",
   description:
     "「誰にいくらもらった？お返しいつ？」を解決する贈答お付き合い管理アプリ。パートナーと共有して、大切な人との贈り物を忘れない。",
