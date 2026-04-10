@@ -52,6 +52,24 @@ export default function RootLayout({
   return (
     <ClerkProvider localization={jaJP}>
       <html lang="ja" className={`${notoSansJP.variable} h-full antialiased`}>
+        <head>
+          <script
+            type="application/ld+json"
+            dangerouslySetInnerHTML={{
+              __html: JSON.stringify({
+                "@context": "https://schema.org",
+                "@type": "WebApplication",
+                name: "つつみ",
+                url: "https://tsutsumi.app",
+                description: "現金もギフトも、記録するだけでお返し時期と金額を教えてくれる贈答管理アプリ",
+                applicationCategory: "LifestyleApplication",
+                operatingSystem: "Web",
+                offers: { "@type": "Offer", price: "0", priceCurrency: "JPY" },
+                inLanguage: "ja",
+              }),
+            }}
+          />
+        </head>
         <body className="min-h-full flex flex-col">
           {children}
           <Analytics />
