@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -96,6 +97,34 @@ export function Calculator() {
             )}
           </CardContent>
         </Card>
+      )}
+
+      {/* 結果直下の強いCTA */}
+      {rule && (
+        <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-[#c4826e] to-[#a0634f] p-6 text-white shadow-lg shadow-[#c4826e]/20">
+          <div className="absolute -right-4 -top-4 w-24 h-24 rounded-full bg-white/10" />
+          <div className="absolute -right-2 -bottom-6 w-16 h-16 rounded-full bg-white/5" />
+          <div className="relative">
+            <p className="text-lg font-bold mb-1">この記録、忘れないようにしませんか？</p>
+            <p className="text-sm opacity-80 mb-4">
+              つつみに保存すれば、お返し期限が近づくとメールでお知らせ。
+              <br />
+              パートナーとの共有もできます。
+            </p>
+            <Link
+              href="/sign-up"
+              className="inline-flex items-center gap-2 bg-white text-[#c4826e] rounded-full px-6 py-3 text-sm font-bold hover:bg-[#fef8f3] transition-colors"
+            >
+              無料で保存する
+              <svg viewBox="0 0 16 16" className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2">
+                <path d="M4 8h8M9 5l3 3-3 3" />
+              </svg>
+            </Link>
+            <p className="text-[10px] opacity-70 mt-3">
+              登録30秒・完全無料・Googleログイン対応
+            </p>
+          </div>
+        </div>
       )}
 
       {/* 未入力時のガイド */}
