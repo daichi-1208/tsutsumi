@@ -895,6 +895,11 @@ export default function LandingPage() {
                   </Link>
                 </li>
                 <li>
+                  <Link href="/blog" className="link-grow hover:text-[#c4826e] transition-colors">
+                    贈答マナー読み物
+                  </Link>
+                </li>
+                <li>
                   <Link href="/sign-up" className="link-grow hover:text-[#c4826e] transition-colors">
                     アカウント作成
                   </Link>

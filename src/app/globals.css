@@ -211,6 +211,167 @@
   animation: kanji-reveal 2s cubic-bezier(0.2, 0.8, 0.2, 1) both;
 }
 
+/* Blog article prose — 編集誌的な読み物タイポグラフィ */
+.prose-tsutsumi {
+  font-family: var(--font-sans);
+  color: #3a2519;
+  font-size: 16px;
+  line-height: 2;
+}
+
+.prose-tsutsumi h2 {
+  font-family: var(--font-display);
+  font-size: 1.75rem;
+  font-weight: 500;
+  line-height: 1.3;
+  color: #3a2519;
+  margin-top: 3.5rem;
+  margin-bottom: 1.5rem;
+  letter-spacing: -0.01em;
+  position: relative;
+  padding-left: 1.25rem;
+}
+
+.prose-tsutsumi h2::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0.9rem;
+  width: 0.5rem;
+  height: 0.5rem;
+  background: #c4826e;
+  border-radius: 9999px;
+}
+
+.prose-tsutsumi h3 {
+  font-family: var(--font-display);
+  font-size: 1.25rem;
+  font-weight: 500;
+  color: #3a2519;
+  margin-top: 2rem;
+  margin-bottom: 1rem;
+}
+
+.prose-tsutsumi p {
+  margin-bottom: 1.5rem;
+  color: #5a4535;
+  line-height: 2;
+}
+
+.prose-tsutsumi ul,
+.prose-tsutsumi ol {
+  margin: 1.5rem 0;
+  padding-left: 1.5rem;
+  color: #5a4535;
+}
+
+.prose-tsutsumi ul li {
+  list-style: none;
+  position: relative;
+  padding-left: 1.25rem;
+  margin-bottom: 0.5rem;
+}
+.prose-tsutsumi ul li::before {
+  content: "—";
+  position: absolute;
+  left: 0;
+  color: #c4826e;
+}
+
+.prose-tsutsumi ol {
+  list-style: none;
+  counter-reset: item;
+}
+.prose-tsutsumi ol li {
+  counter-increment: item;
+  position: relative;
+  padding-left: 2rem;
+  margin-bottom: 0.75rem;
+}
+.prose-tsutsumi ol li::before {
+  content: counter(item, decimal-leading-zero);
+  position: absolute;
+  left: 0;
+  font-family: var(--font-latin);
+  font-size: 0.75rem;
+  font-style: italic;
+  color: #c4826e;
+  top: 0.375rem;
+}
+
+.prose-tsutsumi blockquote {
+  border-left: 2px solid #c4826e;
+  padding: 0.5rem 0 0.5rem 1.5rem;
+  margin: 2rem 0;
+  font-family: var(--font-display);
+  font-style: italic;
+  font-size: 1.125rem;
+  color: #3a2519;
+  line-height: 1.9;
+}
+
+.prose-tsutsumi strong {
+  color: #3a2519;
+  font-weight: 700;
+}
+
+.prose-tsutsumi a {
+  color: #c4826e;
+  text-decoration: underline;
+  text-decoration-color: rgba(196, 130, 110, 0.4);
+  text-underline-offset: 3px;
+  transition: all 0.3s;
+}
+.prose-tsutsumi a:hover {
+  text-decoration-color: #c4826e;
+}
+
+.prose-tsutsumi table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 2rem 0;
+  font-family: var(--font-sans);
+  font-size: 0.875rem;
+}
+
+.prose-tsutsumi thead {
+  border-bottom: 1px solid rgba(58, 37, 25, 0.3);
+}
+
+.prose-tsutsumi th {
+  font-family: var(--font-display);
+  font-weight: 500;
+  text-align: left;
+  padding: 0.75rem 0.5rem;
+  color: #3a2519;
+  font-size: 0.8125rem;
+}
+
+.prose-tsutsumi td {
+  padding: 0.875rem 0.5rem;
+  border-bottom: 1px solid rgba(58, 37, 25, 0.1);
+  color: #5a4535;
+}
+
+.prose-tsutsumi td:first-child {
+  font-family: var(--font-display);
+  color: #3a2519;
+  font-weight: 500;
+}
+
+.prose-tsutsumi td.num {
+  font-family: var(--font-latin);
+  font-variant-numeric: tabular-nums;
+  color: #c4826e;
+  font-weight: 500;
+}
+
+.prose-tsutsumi hr {
+  border: none;
+  border-top: 1px solid rgba(58, 37, 25, 0.15);
+  margin: 3rem 0;
+}
+
 /* Hover underline grow */
 .link-grow {
   position: relative;
