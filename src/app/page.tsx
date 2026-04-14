@@ -205,6 +205,81 @@ export default function LandingPage() {
 
       <MizuhikiDivider />
 
+      {/* Before / After 比較 */}
+      <section className="px-5 pb-20">
+        <div className="max-w-4xl mx-auto">
+          <div className="text-center mb-10">
+            <p className="text-sm font-medium text-[#c4826e] tracking-widest mb-3">
+              BEFORE / AFTER
+            </p>
+            <h2 className="text-2xl md:text-3xl font-bold text-[#3a2519]">
+              つつみを使う前と、使った後。
+            </h2>
+          </div>
+
+          <div className="grid md:grid-cols-2 gap-4 md:gap-6 relative">
+            {/* Before */}
+            <div className="relative bg-[#f5f0eb] border-2 border-dashed border-[#d4c0b0] rounded-2xl p-6 md:p-7">
+              <div className="absolute -top-3 left-6 bg-[#b0a090] text-white text-xs font-bold px-3 py-1 rounded-full">
+                BEFORE
+              </div>
+              <div className="space-y-4 mt-2">
+                {[
+                  { icon: "📝", text: "Excelやノートに殴り書き。すぐ続かなくなる" },
+                  { icon: "😰", text: "「あの人にいくらもらったっけ？」を毎回パートナーに確認" },
+                  { icon: "⏰", text: "気づいたらお返しの期限を1ヶ月過ぎてた" },
+                  { icon: "🤷", text: "半返し？三返し？調べるたびに違う答え" },
+                  { icon: "💢", text: "「送ってくれたと思ってた」「私じゃないよ」で小さな喧嘩" },
+                ].map((item) => (
+                  <div key={item.text} className="flex items-start gap-3">
+                    <span className="text-xl grayscale opacity-60 shrink-0">
+                      {item.icon}
+                    </span>
+                    <p className="text-sm text-[#7a6050] leading-relaxed line-through decoration-[#b0a090]/40">
+                      {item.text}
+                    </p>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* 矢印（モバイル非表示、PCのみ） */}
+            <div className="hidden md:flex absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-10 pointer-events-none">
+              <div className="w-12 h-12 rounded-full bg-white shadow-lg border-2 border-[#c4826e] flex items-center justify-center">
+                <svg viewBox="0 0 24 24" className="w-6 h-6 text-[#c4826e]" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M5 12h14M13 6l6 6-6 6" />
+                </svg>
+              </div>
+            </div>
+
+            {/* After */}
+            <div className="relative bg-gradient-to-br from-[#fef8f3] to-[#fef0ea] border-2 border-[#c4826e] rounded-2xl p-6 md:p-7 shadow-lg shadow-[#c4826e]/10">
+              <div className="absolute -top-3 left-6 bg-gradient-to-r from-[#c4826e] to-[#a0634f] text-white text-xs font-bold px-3 py-1 rounded-full shadow-sm">
+                AFTER
+              </div>
+              <div className="space-y-4 mt-2">
+                {[
+                  { icon: "📱", text: "30秒で記録完了。スマホでサッと" },
+                  { icon: "👫", text: "パートナーと同じ画面を見ながら管理できる" },
+                  { icon: "📧", text: "期限の7日前・1日前にメールでお知らせ" },
+                  { icon: "🎯", text: "全13種のイベントを自動判定して金額計算" },
+                  { icon: "😊", text: "「全部つつみが覚えてる」という安心感" },
+                ].map((item) => (
+                  <div key={item.text} className="flex items-start gap-3">
+                    <span className="text-xl shrink-0">{item.icon}</span>
+                    <p className="text-sm text-[#3a2519] leading-relaxed font-medium">
+                      {item.text}
+                    </p>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <MizuhikiDivider />
+
       {/* Pain Point */}
       <section className="px-5 pb-20">
         <div className="max-w-3xl mx-auto text-center">
