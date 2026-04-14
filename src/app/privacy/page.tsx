@@ -1,5 +1,14 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import Image from "next/image";
+
+export const metadata: Metadata = {
+  title: "プライバシーポリシー | つつみ",
+  description:
+    "つつみ(贈答お付き合い管理アプリ)のプライバシーポリシー。収集する情報、利用目的、第三者提供、データ保管について明示しています。",
+  alternates: { canonical: "https://tsutsumi.app/privacy" },
+  robots: { index: true, follow: true },
+};
 
 export default function PrivacyPage() {
   return (

@@ -1,5 +1,14 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import Image from "next/image";
+
+export const metadata: Metadata = {
+  title: "お問い合わせ | つつみ",
+  description:
+    "つつみ(贈答お付き合い管理アプリ)へのお問い合わせ、ご要望、不具合の報告はXのDMまで。@tsutsumi_app",
+  alternates: { canonical: "https://tsutsumi.app/contact" },
+  robots: { index: true, follow: true },
+};
 
 export default function ContactPage() {
   return (

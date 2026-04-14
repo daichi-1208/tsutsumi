@@ -1,10 +1,15 @@
 import { Suspense } from "react";
+import type { Metadata } from "next";
 import Link from "next/link";
 import Image from "next/image";
 import { UserButton } from "@clerk/nextjs";
 import { DashboardNav, MobileTabBar } from "./nav";
 import { ScopeBadge } from "./scope-badge";
 import { getMyGroups } from "@/lib/actions";
+
+export const metadata: Metadata = {
+  robots: { index: false, follow: false },
+};
 
 export default async function DashboardLayout({
   children,

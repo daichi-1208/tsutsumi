@@ -1,6 +1,12 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import Image from "next/image";
 import { SignUp } from "@clerk/nextjs";
+
+export const metadata: Metadata = {
+  title: "アカウント作成 | つつみ",
+  robots: { index: false, follow: false },
+};
 
 export default async function SignUpPage({
   searchParams,

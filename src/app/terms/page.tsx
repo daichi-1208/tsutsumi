@@ -1,5 +1,14 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import Image from "next/image";
+
+export const metadata: Metadata = {
+  title: "利用規約 | つつみ",
+  description:
+    "つつみ(贈答お付き合い管理アプリ)の利用規約。本サービスの利用条件、アカウント、禁止事項、免責事項などについて定めています。",
+  alternates: { canonical: "https://tsutsumi.app/terms" },
+  robots: { index: true, follow: true },
+};
 
 export default function TermsPage() {
   return (

@@ -1,6 +1,12 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import Image from "next/image";
 import { SignIn } from "@clerk/nextjs";
+
+export const metadata: Metadata = {
+  title: "ログイン | つつみ",
+  robots: { index: false, follow: false },
+};
 
 export default async function SignInPage({
   searchParams,
