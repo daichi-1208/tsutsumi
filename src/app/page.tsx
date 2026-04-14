@@ -1,785 +1,942 @@
 import Link from "next/link";
 import Image from "next/image";
-import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import {
-  MizuhikiDivider,
-  AsanohaPattern,
-  FloatingGifts,
-  CtaDecoration,
-  WaveBackground,
-} from "@/components/illustrations";
 
-/* ─── データ ─── */
+/* ──────────────────────────────────────────────
+   Editorial Japanese Craft — LP for つつみ
+   Chaptered magazine-style layout
+   ────────────────────────────────────────────── */
+
+const RETURN_RULES = [
+  { event: "結婚祝い", rate: "半返し", timing: "1ヶ月以内" },
+  { event: "出産祝い", rate: "30〜50%", timing: "お宮参り頃" },
+  { event: "香典", rate: "半返し", timing: "四十九日後" },
+  { event: "新築祝い", rate: "1/3〜半返し", timing: "入居後1〜2ヶ月" },
+  { event: "お歳暮", rate: "同額", timing: "2週間以内" },
+  { event: "快気祝い", rate: "半返し", timing: "退院後1ヶ月" },
+  { event: "入学祝い", rate: "不要", timing: "お礼状のみ" },
+];
+
+const PERSONAS = [
+  "結婚式を終えて、お返しの準備をこれから始める方",
+  "出産のお祝いをたくさんいただいて、誰に何を返すか迷っている方",
+  "両家からのお祝いで、パートナーと情報共有したい方",
+  "ご両親の還暦・法事など、親戚づきあいで悩んでいる方",
+  "毎年のお歳暮・お中元のやりとりを忘れたくない方",
+  "贈答ルールに自信がない方(半返し？三返し？)",
+];
 
 const FEATURES = [
   {
-    title: "かんたん記録",
-    description:
-      "「もらった」「あげた」を選んで、現金かギフトかを選択。相手・金額・イベントを入れるだけ。",
-    icon: (
-      <svg viewBox="0 0 32 32" className="w-7 h-7" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-        <rect x="5" y="4" width="22" height="26" rx="2" />
-        <path d="M10 10h12M10 15h8M10 20h10" />
-      </svg>
-    ),
+    label: "No. 壱",
+    title: "記録は、三十秒。",
+    body: "もらった / あげた を選んで、相手と金額とイベント種別を入れるだけ。現金でもギフトでも、品物でもカタログでも。",
   },
   {
-    title: "お返しリマインド",
-    description:
-      "半返し？三返し？金額も時期も自動で計算。うっかり忘れをゼロに。",
-    icon: (
-      <svg viewBox="0 0 32 32" className="w-7 h-7" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-        <path d="M16 6a9 9 0 0 1 9 9v4l2 3H5l2-3v-4a9 9 0 0 1 9-9z" />
-        <path d="M13 25a3 3 0 0 0 6 0" />
-      </svg>
-    ),
+    label: "No. 弐",
+    title: "お返しの作法を、自動で。",
+    body: "結婚祝いは半返し、出産祝いは三十から半返し、目上の方からは三分の一。全十三種の作法を内蔵。",
   },
   {
-    title: "グループで共有",
-    description:
-      "パーソナルで自分の記録を管理。グループを作れば、パートナーと一緒に管理もできる。",
-    icon: (
-      <svg viewBox="0 0 32 32" className="w-7 h-7" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-        <circle cx="11" cy="11" r="4" />
-        <circle cx="21" cy="11" r="4" />
-        <path d="M4 26c0-4 3.5-7 7-7 1.5 0 3 .5 5 2 2-1.5 3.5-2 5-2 3.5 0 7 3 7 7" />
-      </svg>
-    ),
+    label: "No. 参",
+    title: "忘れた頃に、お知らせ。",
+    body: "期限の七日前と一日前に、メールで静かに思い出す。バタバタの中でも、失礼を避けられる。",
   },
   {
-    title: "相手別の履歴",
-    description:
-      "人物ごとに贈答のやりとりを時系列で一覧表示。お付き合いの全体像がひと目でわかる。",
-    icon: (
-      <svg viewBox="0 0 32 32" className="w-7 h-7" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-        <path d="M16 4v24M8 8l8 4 8-4M8 16l8 4 8-4M8 24l8 4 8-4" />
-      </svg>
-    ),
+    label: "No. 肆",
+    title: "ふたりで、同じ帳面を。",
+    body: "招待リンクひとつでパートナーと共有。「あの人にいくらもらったっけ?」を、もう二度と言わない。",
   },
 ];
-
-const RETURN_RULES = [
-  { event: "結婚祝い", rate: "半返し（50%）", timing: "挙式後1ヶ月以内" },
-  { event: "出産祝い", rate: "30〜50%", timing: "お宮参りの頃" },
-  { event: "香典", rate: "半返し（50%）", timing: "四十九日後" },
-  { event: "新築祝い", rate: "1/3〜半返し", timing: "入居後1〜2ヶ月" },
-  { event: "お歳暮・お中元", rate: "同額程度", timing: "受領後2週間" },
-  { event: "快気祝い", rate: "半返し（50%）", timing: "退院後1ヶ月" },
-  { event: "入学祝い", rate: "不要", timing: "お礼のみ" },
-];
-
-const STEPS = [
-  {
-    num: "一",
-    title: "記録する",
-    desc: "現金かギフトかを選んで、相手・金額・イベントを入力するだけ",
-  },
-  {
-    num: "二",
-    title: "共有する",
-    desc: "グループを作ってパートナーを招待。2人で一緒に管理できる",
-  },
-  {
-    num: "三",
-    title: "忘れない",
-    desc: "お返し時期が近づいたらメールでお知らせ。金額も自動計算",
-  },
-];
-
-/* ─── ページ ─── */
 
 export default function LandingPage() {
   return (
-    <div className="flex flex-col min-h-screen bg-[#faf6f1]">
-      {/* Header */}
-      <header className="sticky top-0 z-50 bg-[#faf6f1]/85 backdrop-blur-md border-b border-[#e8ddd0]">
-        <div className="max-w-5xl mx-auto px-5 h-16 flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <Image src="/logo.webp" alt="つつみ" width={32} height={32} className="w-8 h-8 rounded-xl" />
-            <span className="text-lg font-bold tracking-tight text-[#4a3228]">
+    <div className="relative bg-[#faf6f1] text-[#3a2519] font-body overflow-x-hidden">
+      {/* 紙目のグレインをページ全体に薄く乗せる */}
+      <div
+        aria-hidden
+        className="fixed inset-0 pointer-events-none z-50 opacity-[0.05] mix-blend-multiply paper-grain"
+      />
+
+      {/* ──────────── NAVIGATION ──────────── */}
+      <header className="fixed top-0 inset-x-0 z-40 backdrop-blur-xl bg-[#faf6f1]/75 border-b border-hairline border-[#3a2519]/10">
+        <div className="max-w-[1600px] mx-auto px-5 sm:px-8 lg:px-12 h-16 flex items-center justify-between">
+          <Link href="/" className="flex items-center gap-3 group">
+            <Image
+              src="/logo.webp"
+              alt="つつみ"
+              width={32}
+              height={32}
+              className="w-8 h-8 rounded-md"
+            />
+            <span className="font-display text-lg tracking-[0.18em] text-[#3a2519] group-hover:text-[#c4826e] transition-colors">
               つつみ
             </span>
-          </div>
-          <Link href="/sign-up">
-            <Button className="bg-[#c4826e] hover:bg-[#a0634f] text-white shadow-sm rounded-full px-6" size="sm">
-              無料ではじめる
-            </Button>
+          </Link>
+
+          <nav className="hidden md:flex items-center gap-10 font-latin text-[10px] uppercase tracking-[0.3em] text-[#7a6050]">
+            <a href="#problem" className="link-grow hover:text-[#c4826e] transition-colors">
+              Problem
+            </a>
+            <a href="#reason" className="link-grow hover:text-[#c4826e] transition-colors">
+              Reason
+            </a>
+            <a href="#solution" className="link-grow hover:text-[#c4826e] transition-colors">
+              Solution
+            </a>
+            <a href="#rules" className="link-grow hover:text-[#c4826e] transition-colors">
+              Rules
+            </a>
+          </nav>
+
+          <Link
+            href="/sign-up"
+            className="group inline-flex items-center gap-2.5 text-sm font-medium text-[#3a2519] hover:text-[#c4826e] transition-colors"
+          >
+            <span className="hidden sm:inline tracking-wide">はじめる</span>
+            <span className="w-9 h-9 rounded-full border border-hairline border-[#3a2519]/25 group-hover:border-[#c4826e] group-hover:bg-[#c4826e] group-hover:text-[#faf6f1] flex items-center justify-center transition-all duration-300">
+              <svg
+                viewBox="0 0 16 16"
+                className="w-3 h-3"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+              >
+                <path d="M3 8h10M9 4l4 4-4 4" />
+              </svg>
+            </span>
           </Link>
         </div>
       </header>
 
-      {/* Hero */}
-      <section className="relative overflow-hidden">
-        {/* 背景装飾 */}
-        <AsanohaPattern className="inset-0 text-[#8b5e3c] opacity-[0.025]" />
-        <FloatingGifts className="inset-0" />
-        <WaveBackground className="bottom-0 left-0 w-full h-48" />
+      {/* ════════════════════════════════════════
+          CHAPTER 序 — HERO
+          ════════════════════════════════════════ */}
+      <section className="relative min-h-[100svh] pt-28 pb-20 overflow-hidden">
+        {/* Massive faded 包 kanji as backdrop */}
+        <div
+          aria-hidden
+          className="absolute inset-0 flex items-center justify-center pointer-events-none select-none animate-kanji-reveal"
+        >
+          <span className="font-display text-[55vw] md:text-[42vw] lg:text-[32vw] leading-none text-[#3a2519] font-black">
+            包
+          </span>
+        </div>
 
-        <div className="relative max-w-6xl mx-auto px-5 py-16 md:py-24">
-          <div className="grid md:grid-cols-2 gap-8 items-center">
-            {/* テキスト */}
-            <div className="text-center md:text-left order-2 md:order-1">
-              <div className="inline-flex items-center gap-2 bg-white/70 backdrop-blur-sm border border-[#e8ddd0] rounded-full px-4 py-1.5 mb-8 text-sm text-[#8b5e3c] font-medium">
-                <span className="w-1.5 h-1.5 rounded-full bg-[#c4826e]" />
-                結婚・出産直後の方へ
-              </div>
+        {/* Vertical Japanese text — decorative left edge */}
+        <div className="hidden lg:flex absolute left-8 top-1/2 -translate-y-1/2 z-10 items-center gap-4">
+          <span className="font-latin text-[10px] uppercase tracking-[0.3em] text-[#7a6050]/60 vertical-rl">
+            Tsutsumi — since 2026
+          </span>
+        </div>
 
-              <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold tracking-tight leading-[1.1] mb-8 text-[#3a2519]">
-                <span className="inline-block">お返しで、</span>
-                <br />
-                <span className="inline-block bg-gradient-to-r from-[#c4826e] to-[#d4a088] bg-clip-text text-transparent">
-                  悩まない。
-                </span>
-              </h1>
+        {/* Vertical text right edge */}
+        <div className="hidden lg:block absolute right-10 top-1/2 -translate-y-1/2 z-10">
+          <div className="font-display text-xs tracking-[0.6em] text-[#3a2519]/50 vertical-rl">
+            贈答のお付き合い、丁寧に結ぶ。
+          </div>
+        </div>
 
-              <p className="text-lg text-[#7a6050] mb-10 max-w-md mx-auto md:mx-0 leading-relaxed">
-                「誰にいくらもらったっけ？」「もうお返しした？」
-                <br />
-                結婚式直後、出産直後の忙しい時期。
-                <br />
-                <span className="font-bold text-[#3a2519]">つつみが全部覚えておきます。</span>
-              </p>
-
-              <div className="flex flex-col sm:flex-row gap-3 justify-center md:justify-start">
-                <Link href="/sign-up">
-                  <Button size="lg" className="bg-[#c4826e] hover:bg-[#a0634f] text-white shadow-lg shadow-[#c4826e]/20 rounded-full text-base px-10 h-13">
-                    無料ではじめる
-                  </Button>
-                </Link>
-                <a href="#features">
-                  <Button size="lg" variant="outline" className="border-[#d4c0b0] text-[#7a6050] hover:bg-[#f0e8df] rounded-full text-base px-10 h-13">
-                    くわしく見る
-                  </Button>
-                </a>
-              </div>
-
-              {/* SNSログイン案内 */}
-              <div className="flex items-center gap-3 mt-6 justify-center md:justify-start">
-                <span className="text-xs text-[#b0a090]">かんたんログイン</span>
-                <div className="flex items-center gap-2">
-                  {/* Google */}
-                  <div className="w-8 h-8 rounded-full bg-white border border-[#e0d5c8] flex items-center justify-center shadow-sm" title="Googleでログイン">
-                    <svg viewBox="0 0 24 24" className="w-4 h-4" fill="none">
-                      <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 0 1-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z" fill="#4285F4" />
-                      <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853" />
-                      <path d="M5.84 14.09A6.68 6.68 0 0 1 5.5 12c0-.72.12-1.42.35-2.09V7.07H2.18A11 11 0 0 0 1 12c0 1.78.42 3.46 1.18 4.93l3.66-2.84z" fill="#FBBC05" />
-                      <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335" />
-                    </svg>
-                  </div>
-                  {/* Mail */}
-                  <div className="w-8 h-8 rounded-full bg-white border border-[#e0d5c8] flex items-center justify-center shadow-sm" title="メールでログイン">
-                    <svg viewBox="0 0 24 24" className="w-4 h-4 text-[#8b5e3c]" fill="none" stroke="currentColor" strokeWidth="1.5">
-                      <rect x="3" y="5" width="18" height="14" rx="2" />
-                      <path d="M3 7l9 6 9-6" />
-                    </svg>
-                  </div>
-                </div>
-              </div>
+        <div className="relative max-w-[1400px] mx-auto px-6 md:px-16 lg:px-24 grid md:grid-cols-12 gap-8 md:gap-10 items-center min-h-[80svh]">
+          {/* LEFT: Text content */}
+          <div className="md:col-span-7 lg:col-span-7">
+            {/* Chapter marker */}
+            <div className="flex items-center gap-4 mb-10 animate-fade-rise" style={{ animationDelay: "0.1s" }}>
+              <span className="font-latin text-xs tracking-[0.3em] uppercase text-[#c4826e]">
+                No. 序
+              </span>
+              <span className="h-px w-16 bg-[#c4826e]/50 animate-draw-line" style={{ animationDelay: "0.3s" }} />
+              <span className="font-latin text-xs tracking-[0.15em] italic text-[#7a6050]">
+                Prologue
+              </span>
             </div>
 
-            {/* メインビジュアル */}
-            <div className="order-1 md:order-2 flex justify-center">
-              <div className="relative w-full max-w-[420px] md:max-w-[480px]">
-                <div className="absolute -inset-6 bg-gradient-to-br from-[#c4826e]/20 to-[#d4a088]/10 rounded-[2rem] blur-3xl" />
-                <div className="absolute -inset-1 bg-gradient-to-br from-[#c4826e]/15 to-transparent rounded-2xl" />
+            {/* Massive display headline */}
+            <h1
+              className="font-display font-[500] text-[3.25rem] sm:text-[4rem] md:text-[5rem] lg:text-[6.5rem] leading-[0.92] tracking-[-0.02em] text-[#3a2519] mb-10 animate-fade-rise"
+              style={{ animationDelay: "0.25s" }}
+            >
+              お返しで、
+              <br />
+              <span className="italic text-[#c4826e]">悩まない。</span>
+            </h1>
+
+            {/* Horizontal divider */}
+            <div
+              className="w-28 h-px bg-[#3a2519]/30 mb-8 animate-draw-line"
+              style={{ animationDelay: "0.5s" }}
+            />
+
+            {/* Subtitle */}
+            <p
+              className="font-body text-base md:text-lg lg:text-xl text-[#5a4535] leading-[1.9] max-w-lg mb-12 animate-fade-rise"
+              style={{ animationDelay: "0.6s" }}
+            >
+              「誰にいくらもらったっけ?」「もうお返しした?」
+              <br />
+              結婚式や出産の忙しい時期、
+              <br />
+              <span className="text-[#3a2519] font-medium">
+                つつみが全部、覚えておきます。
+              </span>
+            </p>
+
+            {/* CTA */}
+            <div
+              className="flex items-center gap-6 flex-wrap animate-fade-rise"
+              style={{ animationDelay: "0.8s" }}
+            >
+              <Link
+                href="/sign-up"
+                className="group inline-flex items-center gap-3 bg-[#3a2519] text-[#faf6f1] pl-7 pr-3 py-3 rounded-full hover:bg-[#c4826e] transition-all duration-500"
+              >
+                <span className="text-sm font-medium tracking-wider">
+                  30秒ではじめる
+                </span>
+                <span className="w-9 h-9 rounded-full bg-[#faf6f1] text-[#3a2519] flex items-center justify-center group-hover:rotate-[-45deg] transition-transform duration-500">
+                  <svg
+                    viewBox="0 0 16 16"
+                    className="w-3.5 h-3.5"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2.5"
+                  >
+                    <path d="M3 8h10M9 4l4 4-4 4" />
+                  </svg>
+                </span>
+              </Link>
+
+              <Link
+                href="/calculator"
+                className="text-sm text-[#7a6050] link-grow"
+              >
+                まず計算だけ試す
+              </Link>
+            </div>
+
+            {/* Trust markers */}
+            <div
+              className="mt-16 flex items-center gap-6 font-latin text-[10px] uppercase tracking-[0.3em] text-[#7a6050]/70 animate-fade-rise"
+              style={{ animationDelay: "1s" }}
+            >
+              <span>完全無料</span>
+              <span className="w-1 h-1 rounded-full bg-[#c4826e]/50" />
+              <span>登録30秒</span>
+              <span className="w-1 h-1 rounded-full bg-[#c4826e]/50" />
+              <span>Partner share</span>
+            </div>
+          </div>
+
+          {/* RIGHT: Image as editorial photo with layered frames */}
+          <div
+            className="md:col-span-5 lg:col-span-5 relative animate-fade-rise"
+            style={{ animationDelay: "0.4s" }}
+          >
+            <div className="relative aspect-[4/5] max-w-sm ml-auto">
+              {/* Back offset frame */}
+              <div className="absolute inset-0 border border-hairline border-[#3a2519]/15 -translate-x-3 -translate-y-3" />
+              {/* Accent offset frame */}
+              <div className="absolute inset-0 border border-hairline border-[#c4826e]/40 translate-x-3 translate-y-3" />
+              {/* Image */}
+              <div className="relative h-full w-full overflow-hidden">
                 <Image
                   src="/hero-furoshiki.webp"
-                  alt="風呂敷に丁寧に包まれた贈り物"
-                  width={920}
-                  height={518}
+                  alt="風呂敷に包まれた贈り物"
+                  fill
+                  className="object-cover"
                   priority
-                  className="relative rounded-2xl shadow-2xl shadow-[#3a2519]/15 ring-1 ring-[#c4826e]/10"
                 />
               </div>
+              {/* Caption */}
+              <div className="absolute -bottom-10 left-0 right-0 flex items-center gap-3 px-1">
+                <span className="font-latin text-[10px] italic text-[#7a6050]">
+                  fig. 壱
+                </span>
+                <span className="h-px flex-1 bg-[#3a2519]/15" />
+                <span className="font-latin text-[9px] uppercase tracking-[0.25em] text-[#7a6050]">
+                  Furoshiki
+                </span>
+              </div>
             </div>
           </div>
         </div>
-      </section>
 
-      <MizuhikiDivider />
-
-      {/* Before / After 比較 */}
-      <section className="px-5 pb-20">
-        <div className="max-w-4xl mx-auto">
-          <div className="text-center mb-10">
-            <p className="text-sm font-medium text-[#c4826e] tracking-widest mb-3">
-              BEFORE / AFTER
-            </p>
-            <h2 className="text-2xl md:text-3xl font-bold text-[#3a2519]">
-              つつみを使う前と、使った後。
-            </h2>
-          </div>
-
-          <div className="grid md:grid-cols-2 gap-4 md:gap-6 relative">
-            {/* Before */}
-            <div className="relative bg-[#f5f0eb] border-2 border-dashed border-[#d4c0b0] rounded-2xl p-6 md:p-7">
-              <div className="absolute -top-3 left-6 bg-[#b0a090] text-white text-xs font-bold px-3 py-1 rounded-full">
-                BEFORE
-              </div>
-              <div className="space-y-4 mt-2">
-                {[
-                  { icon: "📝", text: "Excelやノートに殴り書き。すぐ続かなくなる" },
-                  { icon: "😰", text: "「あの人にいくらもらったっけ？」を毎回パートナーに確認" },
-                  { icon: "⏰", text: "気づいたらお返しの期限を1ヶ月過ぎてた" },
-                  { icon: "🤷", text: "半返し？三返し？調べるたびに違う答え" },
-                  { icon: "💢", text: "「送ってくれたと思ってた」「私じゃないよ」で小さな喧嘩" },
-                ].map((item) => (
-                  <div key={item.text} className="flex items-start gap-3">
-                    <span className="text-xl grayscale opacity-60 shrink-0">
-                      {item.icon}
-                    </span>
-                    <p className="text-sm text-[#7a6050] leading-relaxed line-through decoration-[#b0a090]/40">
-                      {item.text}
-                    </p>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            {/* 矢印（モバイル非表示、PCのみ） */}
-            <div className="hidden md:flex absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-10 pointer-events-none">
-              <div className="w-12 h-12 rounded-full bg-white shadow-lg border-2 border-[#c4826e] flex items-center justify-center">
-                <svg viewBox="0 0 24 24" className="w-6 h-6 text-[#c4826e]" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M5 12h14M13 6l6 6-6 6" />
-                </svg>
-              </div>
-            </div>
-
-            {/* After */}
-            <div className="relative bg-gradient-to-br from-[#fef8f3] to-[#fef0ea] border-2 border-[#c4826e] rounded-2xl p-6 md:p-7 shadow-lg shadow-[#c4826e]/10">
-              <div className="absolute -top-3 left-6 bg-gradient-to-r from-[#c4826e] to-[#a0634f] text-white text-xs font-bold px-3 py-1 rounded-full shadow-sm">
-                AFTER
-              </div>
-              <div className="space-y-4 mt-2">
-                {[
-                  { icon: "📱", text: "30秒で記録完了。スマホでサッと" },
-                  { icon: "👫", text: "パートナーと同じ画面を見ながら管理できる" },
-                  { icon: "📧", text: "期限の7日前・1日前にメールでお知らせ" },
-                  { icon: "🎯", text: "全13種のイベントを自動判定して金額計算" },
-                  { icon: "😊", text: "「全部つつみが覚えてる」という安心感" },
-                ].map((item) => (
-                  <div key={item.text} className="flex items-start gap-3">
-                    <span className="text-xl shrink-0">{item.icon}</span>
-                    <p className="text-sm text-[#3a2519] leading-relaxed font-medium">
-                      {item.text}
-                    </p>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-
-          {/* ターゲット絞り込み */}
-          <div className="mt-14 bg-white rounded-2xl border border-[#efe5da] p-6 md:p-8">
-            <p className="text-sm font-medium text-[#c4826e] tracking-widest mb-3 text-center">
-              FOR YOU
-            </p>
-            <h3 className="text-xl md:text-2xl font-bold text-[#3a2519] mb-6 text-center">
-              こんな方におすすめです
-            </h3>
-            <div className="grid md:grid-cols-2 gap-3">
-              {[
-                "結婚式を終えて、お返しの準備をこれから始める方",
-                "出産のお祝いをたくさんいただいて、誰に何を返すか迷っている方",
-                "両家からのお祝いで、パートナーと情報共有したい方",
-                "ご両親の還暦・法事など、親戚づきあいで悩んでいる方",
-                "毎年のお歳暮・お中元のやりとりを忘れたくない方",
-                "贈答ルールに自信がない方（半返し？三返し？）",
-              ].map((text) => (
-                <div
-                  key={text}
-                  className="flex items-start gap-2.5 p-3 rounded-xl bg-[#fef8f3]"
-                >
-                  <svg viewBox="0 0 20 20" className="w-5 h-5 text-[#c4826e] shrink-0 mt-0.5" fill="none" stroke="currentColor" strokeWidth="2.5">
-                    <path d="M4 10l4 4 8-9" strokeLinecap="round" strokeLinejoin="round" />
-                  </svg>
-                  <p className="text-sm text-[#3a2519] leading-relaxed">{text}</p>
-                </div>
-              ))}
-            </div>
-          </div>
+        {/* Page marker bottom right */}
+        <div className="hidden md:flex absolute bottom-10 right-12 items-center gap-3 font-latin text-xs text-[#7a6050]/70">
+          <span className="h-px w-8 bg-[#7a6050]/30" />
+          <span className="tracking-[0.2em]">01 / 07</span>
         </div>
       </section>
 
-      <MizuhikiDivider />
-
-      {/* Pain Point */}
-      <section className="px-5 pb-20">
-        <div className="max-w-3xl mx-auto text-center">
-          <p className="text-sm font-medium text-[#c4826e] tracking-widest mb-3">
-            PAIN
-          </p>
-          <h2 className="text-2xl md:text-3xl font-bold mb-4 text-[#3a2519]">
-            結婚・出産の後、こうなっていませんか？
-          </h2>
-          <p className="text-[#7a6050] mb-10 max-w-lg mx-auto">
-            両家から大量に届くお祝い。忙しい時期にお返しまで考えられない。
-            気づいたら期限を過ぎて、パートナーと責任のなすり合い。
-          </p>
-          <div className="grid md:grid-cols-3 gap-5">
-            {[
-              {
-                text: "「結婚祝いのお返し、もう1ヶ月過ぎてた…」気まずさMAX。",
-                sub: "期限を忘れる",
-                icon: (
-                  <svg viewBox="0 0 24 24" className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="1.5">
-                    <circle cx="12" cy="12" r="10" />
-                    <path d="M12 6v6l4 2" />
-                  </svg>
-                ),
-              },
-              {
-                text: "「え、田中さんっていくらもらったっけ？」「私の叔母だよ、3万円」毎回この会話。",
-                sub: "記録がバラバラ",
-                icon: (
-                  <svg viewBox="0 0 24 24" className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="1.5">
-                    <path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2" />
-                    <rect x="9" y="3" width="6" height="4" rx="1" />
-                    <path d="M9 14l2 2 4-4" opacity="0.3" />
-                  </svg>
-                ),
-              },
-              {
-                text: "半返し？三返し？目上の方は1/3？調べるたびに違う答えが出てくる。",
-                sub: "ルールがわからない",
-                icon: (
-                  <svg viewBox="0 0 24 24" className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="1.5">
-                    <circle cx="12" cy="12" r="10" />
-                    <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3" />
-                    <circle cx="12" cy="17" r="0.5" fill="currentColor" />
-                  </svg>
-                ),
-              },
-            ].map((pain) => (
-              <div
-                key={pain.sub}
-                className="relative bg-white rounded-2xl p-6 shadow-sm border border-[#efe5da] text-left group hover:shadow-md hover:-translate-y-0.5 transition-all"
-              >
-                <div className="w-10 h-10 rounded-xl bg-[#fef0ea] flex items-center justify-center text-[#c4826e] mb-4">
-                  {pain.icon}
-                </div>
-                <p className="text-xs font-semibold text-[#c4826e] tracking-wider mb-2 uppercase">
-                  {pain.sub}
-                </p>
-                <p className="text-[#5a4535] leading-relaxed text-sm">
-                  {pain.text}
-                </p>
+      {/* ════════════════════════════════════════
+          CHAPTER 壱 — THE PROBLEM (Before / After)
+          ════════════════════════════════════════ */}
+      <section id="problem" className="relative py-32 md:py-40 overflow-hidden">
+        <div className="max-w-[1400px] mx-auto px-6 md:px-16 lg:px-24">
+          {/* Chapter opener */}
+          <div className="grid md:grid-cols-12 gap-8 mb-20 md:mb-28 items-end">
+            <div className="md:col-span-3">
+              <div className="flex items-center gap-3 mb-4">
+                <span className="font-latin text-[11px] uppercase tracking-[0.3em] text-[#c4826e]">
+                  No. 壱
+                </span>
+                <span className="h-px w-12 bg-[#c4826e]/40" />
               </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Solution - ダークセクション */}
-      <section className="relative bg-gradient-to-b from-[#3a2519] to-[#4a3228] text-white py-20 px-5 overflow-hidden">
-        <AsanohaPattern className="inset-0 text-white opacity-[0.02]" />
-
-        <div className="relative max-w-5xl mx-auto">
-          {/* ソリューション導入: テキスト + カップル写真 */}
-          <div className="grid md:grid-cols-2 gap-10 items-center mb-16">
-            <div className="text-center md:text-left">
-              <p className="text-sm font-medium text-[#d4a088] tracking-widest mb-3">
-                SOLUTION
+              <p className="font-latin text-[11px] italic uppercase tracking-[0.2em] text-[#7a6050]">
+                The Problem
               </p>
-              <h2 className="text-3xl md:text-4xl font-bold mb-5">
-                もう迷わない。
+            </div>
+            <div className="md:col-span-9">
+              <h2 className="font-display font-[500] text-4xl md:text-5xl lg:text-6xl leading-[1.1] tracking-[-0.01em] text-[#3a2519]">
+                結婚・出産の後、
                 <br />
-                もう喧嘩しない。
+                <span className="italic text-[#c4826e]">こうなっていませんか。</span>
               </h2>
-              <p className="text-[#c4b0a0] max-w-lg leading-relaxed">
-                記録は1人30秒。パートナーと共有すれば、2人で同じ画面を見ながら管理できる。
-                お返し期限が近づけばメールでお知らせ。
-                <br />
-                <span className="font-bold text-white">あの混乱の日々、もう来ません。</span>
-              </p>
-            </div>
-            <div className="relative">
-              <div className="absolute -inset-4 bg-[#c4826e]/15 rounded-[2rem] blur-2xl" />
-              <div className="relative rounded-2xl overflow-hidden ring-1 ring-white/15 shadow-2xl shadow-black/30">
-                <Image
-                  src="/couple-wrapping.webp"
-                  alt="パートナーと一緒に贈り物を包む"
-                  width={920}
-                  height={518}
-                  className="block"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-[#3a2519]/30 to-transparent" />
-              </div>
             </div>
           </div>
 
-          {/* Mock UI - 2カラム */}
-          <div className="grid md:grid-cols-2 gap-6 max-w-3xl mx-auto">
-            {/* ダッシュボード */}
-            <div className="bg-white/[0.07] backdrop-blur-sm rounded-2xl border border-white/10 p-5">
-              <div className="flex items-center justify-between mb-5">
-                <div className="flex items-center gap-2">
-                  <div className="w-6 h-6 rounded bg-[#c4826e]/30 flex items-center justify-center">
-                    <svg viewBox="0 0 16 16" className="w-3.5 h-3.5 text-[#d4a088]" fill="currentColor">
-                      <path d="M8 2a6 6 0 1 0 0 12A6 6 0 0 0 8 2zM7 5h2v3.5l2.5 1.5-.5 1L8 9V5z" />
-                    </svg>
-                  </div>
-                  <span className="text-sm font-medium text-white/80">お返し未済</span>
-                </div>
-                <span className="text-xs bg-[#c4826e] rounded-full px-3 py-1 font-medium">2件</span>
+          {/* Before / After editorial spread */}
+          <div className="grid md:grid-cols-2 gap-px md:gap-0 bg-[#3a2519]/10">
+            {/* BEFORE — monochrome */}
+            <div className="bg-[#f5f0eb] p-8 md:p-12 lg:p-16">
+              <div className="flex items-center gap-3 mb-10">
+                <span className="font-latin text-[10px] uppercase tracking-[0.3em] text-[#7a6050]">
+                  Before
+                </span>
+                <span className="h-px flex-1 bg-[#7a6050]/20 max-w-[80px]" />
               </div>
-              {[
-                { name: "田中太郎さん", event: "結婚祝い", amount: "30,000", returnAmount: "15,000", days: "あと12日" },
-                { name: "佐藤花子さん", event: "出産祝い", amount: "10,000", returnAmount: "5,000", days: "あと25日" },
-              ].map((item) => (
-                <div key={item.name} className="bg-white/5 rounded-xl p-4 mb-3 last:mb-0 border border-white/5">
-                  <div className="flex justify-between items-start mb-2">
-                    <div>
-                      <p className="text-sm font-medium">{item.name}</p>
-                      <p className="text-xs text-white/40 mt-0.5">{item.event}</p>
-                    </div>
-                    <span className="text-xs bg-white/10 rounded-full px-2.5 py-0.5 text-[#d4a088] font-medium">
-                      {item.days}
+
+              <p className="font-display text-xl md:text-2xl leading-[1.6] text-[#7a6050] mb-10 font-[400]">
+                「え、田中さんっていくらもらったっけ?」
+              </p>
+
+              <ul className="space-y-6">
+                {[
+                  "Excelやノートに殴り書き。すぐ続かない",
+                  "気づいたら期限を1ヶ月過ぎている",
+                  "半返し?三返し?調べるたびに違う答え",
+                  "「送ってくれたと思ってた」で小さな喧嘩",
+                ].map((text, i) => (
+                  <li key={text} className="flex items-start gap-4">
+                    <span className="font-latin text-[10px] text-[#7a6050]/50 pt-1 tabular-nums">
+                      0{i + 1}
                     </span>
-                  </div>
-                  <div className="flex items-center gap-2 text-xs text-white/50 mt-2">
-                    <span>¥{item.amount}</span>
-                    <svg viewBox="0 0 16 16" className="w-3 h-3 text-white/20" fill="none" stroke="currentColor" strokeWidth="2">
-                      <path d="M4 8h8M9 5l3 3-3 3" />
-                    </svg>
-                    <span className="text-[#d4a088] font-medium">¥{item.returnAmount}</span>
-                  </div>
-                </div>
-              ))}
+                    <p className="text-sm leading-relaxed text-[#7a6050] line-through decoration-[#7a6050]/30">
+                      {text}
+                    </p>
+                  </li>
+                ))}
+              </ul>
             </div>
 
-            {/* 贈答登録フォーム風 */}
-            <div className="bg-white/[0.07] backdrop-blur-sm rounded-2xl border border-white/10 p-5">
-              <div className="flex items-center gap-2 mb-5">
-                <div className="w-6 h-6 rounded bg-[#c4826e]/30 flex items-center justify-center">
-                  <svg viewBox="0 0 16 16" className="w-3.5 h-3.5 text-[#d4a088]" fill="none" stroke="currentColor" strokeWidth="1.5">
-                    <path d="M8 3v10M3 8h10" />
-                  </svg>
-                </div>
-                <span className="text-sm font-medium text-white/80">贈答を記録</span>
+            {/* AFTER — warm */}
+            <div className="bg-gradient-to-br from-[#fef8f3] via-[#fef0ea] to-[#fce4da] p-8 md:p-12 lg:p-16 relative">
+              {/* Corner accent */}
+              <div className="absolute top-0 right-0 w-16 h-16 border-t border-r border-hairline border-[#c4826e]/40" />
+
+              <div className="flex items-center gap-3 mb-10">
+                <span className="font-latin text-[10px] uppercase tracking-[0.3em] text-[#c4826e]">
+                  After
+                </span>
+                <span className="h-px flex-1 bg-[#c4826e]/30 max-w-[80px]" />
               </div>
 
-              <div className="space-y-3">
-                <div className="flex gap-2">
-                  <div className="flex-1 bg-[#c4826e]/30 rounded-lg px-3 py-2 text-sm text-center font-medium text-white border border-[#c4826e]/40">
-                    もらった
-                  </div>
-                  <div className="flex-1 bg-white/5 rounded-lg px-3 py-2 text-sm text-center text-white/40 border border-white/5">
-                    あげた
-                  </div>
-                </div>
-                <div className="bg-white/5 rounded-lg px-3 py-2.5 text-sm text-white/30 border border-white/5">
-                  相手の名前
-                </div>
-                <div className="flex gap-2">
-                  <div className="flex-1 bg-white/15 rounded-lg px-3 py-2 text-sm text-center font-medium text-white/70 border border-white/10">
-                    現金
-                  </div>
-                  <div className="flex-1 bg-white/5 rounded-lg px-3 py-2 text-sm text-center text-white/30 border border-white/5">
-                    ギフト
-                  </div>
-                </div>
-                <div className="bg-white/5 rounded-lg px-3 py-2.5 text-sm text-white/30 border border-white/5">
-                  ¥ 金額
-                </div>
-                <div className="flex gap-2">
-                  <div className="flex-1 bg-white/5 rounded-lg px-3 py-2.5 text-sm text-white/30 border border-white/5">
-                    結婚祝い
-                  </div>
-                  <div className="flex-1 bg-white/5 rounded-lg px-3 py-2.5 text-sm text-white/30 border border-white/5">
-                    2026/04/09
-                  </div>
-                </div>
-                <div className="bg-[#c4826e] rounded-lg px-3 py-2.5 text-sm text-center text-white font-medium">
-                  記録する
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Developer Voice */}
-      <section className="py-20 px-5">
-        <div className="max-w-3xl mx-auto">
-          <div className="text-center mb-10">
-            <p className="text-sm font-medium text-[#c4826e] tracking-widest mb-3">
-              DEVELOPER&apos;S STORY
-            </p>
-            <h2 className="text-2xl md:text-3xl font-bold text-[#3a2519]">
-              作った人も、同じ悩みを抱えていました。
-            </h2>
-          </div>
-
-          <div className="bg-white rounded-2xl border border-[#efe5da] p-6 md:p-8 shadow-sm">
-            <div className="flex items-start gap-4 mb-5">
-              <div className="w-12 h-12 rounded-full bg-gradient-to-br from-[#c4826e] to-[#a0634f] flex items-center justify-center text-white font-bold text-lg shrink-0">
-                D
-              </div>
-              <div>
-                <p className="font-bold text-[#3a2519]">開発者（エンジニア・30代）</p>
-                <p className="text-xs text-[#b0a090]">結婚・第一子出産を経験</p>
-              </div>
-            </div>
-            <div className="space-y-4 text-[#5a4535] leading-relaxed text-sm">
-              <p>
-                ここ数年で、結婚と出産を経験しました。
-                ありがたいことに、親戚・職場・友人……いろんなところからお祝いをいただきました。
-                しかも自分の側だけじゃなくて、妻の側にも。
-              </p>
-              <p className="bg-[#fef8f3] p-4 rounded-xl border-l-4 border-[#c4826e] italic">
-                「田中さんからいくらもらったっけ？」
+              <p className="font-display text-xl md:text-2xl leading-[1.6] text-[#3a2519] mb-10 font-[500]">
+                「全部つつみが覚えてる」
                 <br />
-                「えっ、それ私の叔母からだよ？あなたの方の田中さんとは別の人」
-                <br />
-                「お返しいくらにする？」「半返しでいいの？」
-                <br />
-                <span className="text-xs text-[#b0a090] not-italic">— 毎回この会話を繰り返していました</span>
+                <span className="text-[#c4826e] italic">という安心。</span>
               </p>
-              <p>
-                僕も妻もエンジニアなので、すぐにスプレッドシートを作って共有しました。これで一応は管理できました。
-                でも冷静に考えると、<span className="font-bold text-[#3a2519]">スプシで管理しようってなるのはエンジニアだから</span>であって、普通の人はこんなことしません。
-              </p>
-              <p>
-                母親に「お祝い管理どうしてる？」と聞いたら、
-                <span className="font-bold text-[#3a2519]">「ノートに手書きしてる」</span>
-                と言われました。令和なのに。
-                そして手書きだから当然、夫婦間で共有できていない。これが普通の家庭のリアルだと思います。
-              </p>
-              <p>
-                だから作りました。
-                <span className="font-bold text-[#c4826e]">あの結婚・出産のバタバタの時期に、これがあったらどれだけ楽だったか。</span>
-                同じ悩みを抱えている方に、使ってもらえたら嬉しいです。
-              </p>
+
+              <ul className="space-y-6">
+                {[
+                  "30秒で記録完了。スマホでサッと",
+                  "期限の7日前と1日前にメールで通知",
+                  "13種のイベントを自動判定して金額計算",
+                  "パートナーと同じ画面で管理できる",
+                ].map((text, i) => (
+                  <li key={text} className="flex items-start gap-4">
+                    <span className="font-latin text-[10px] text-[#c4826e] pt-1 tabular-nums font-medium">
+                      0{i + 1}
+                    </span>
+                    <p className="text-sm leading-relaxed text-[#3a2519] font-medium">
+                      {text}
+                    </p>
+                  </li>
+                ))}
+              </ul>
             </div>
           </div>
         </div>
-      </section>
 
-      {/* Features */}
-      <section id="features" className="relative py-20 px-5 overflow-hidden scroll-mt-20">
-        <WaveBackground className="top-0 left-0 w-full h-48 rotate-180" />
-        <div className="relative max-w-4xl mx-auto">
-          <div className="text-center mb-12">
-            <p className="text-sm font-medium text-[#c4826e] tracking-widest mb-3">
-              FEATURES
-            </p>
-            <h2 className="text-2xl md:text-3xl font-bold text-[#3a2519]">
-              つつみの機能
-            </h2>
-          </div>
-          <div className="grid md:grid-cols-2 gap-5">
-            {FEATURES.map((feature) => (
-              <Card
-                key={feature.title}
-                className="bg-white border-[#efe5da] rounded-2xl shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all"
-              >
-                <CardHeader className="pb-2">
-                  <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-[#fef0ea] to-[#fce4da] flex items-center justify-center text-[#c4826e] mb-3">
-                    {feature.icon}
-                  </div>
-                  <CardTitle className="text-lg text-[#3a2519]">
-                    {feature.title}
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <CardDescription className="leading-relaxed text-[#7a6050]">
-                    {feature.description}
-                  </CardDescription>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
+        {/* Page marker */}
+        <div className="hidden md:flex absolute bottom-10 right-12 items-center gap-3 font-latin text-xs text-[#7a6050]/70">
+          <span className="h-px w-8 bg-[#7a6050]/30" />
+          <span className="tracking-[0.2em]">02 / 07</span>
         </div>
       </section>
 
-      <MizuhikiDivider />
-
-      {/* Return Rules Table */}
-      <section className="py-16 px-5">
-        <div className="max-w-3xl mx-auto">
-          <div className="text-center mb-10">
-            <p className="text-sm font-medium text-[#c4826e] tracking-widest mb-3">
-              KNOWLEDGE
-            </p>
-            <h2 className="text-2xl md:text-3xl font-bold text-[#3a2519] mb-3">
-              お返しのルール、知ってますか？
-            </h2>
-            <p className="text-[#7a6050]">
-              つつみが日本の贈答慣習を自動で判定します。
-            </p>
-          </div>
-          <div className="bg-white rounded-2xl border border-[#efe5da] overflow-hidden shadow-sm">
-            <div className="overflow-x-auto">
-              <table className="w-full text-sm">
-                <thead>
-                  <tr className="border-b border-[#efe5da] bg-[#fef8f3]">
-                    <th className="text-left py-4 px-5 font-medium text-[#8b5e3c] text-xs tracking-wider uppercase">
-                      イベント
-                    </th>
-                    <th className="text-left py-4 px-5 font-medium text-[#8b5e3c] text-xs tracking-wider uppercase">
-                      お返し率
-                    </th>
-                    <th className="text-left py-4 px-5 font-medium text-[#8b5e3c] text-xs tracking-wider uppercase">
-                      時期の目安
-                    </th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {RETURN_RULES.map((rule, i) => (
-                    <tr
-                      key={rule.event}
-                      className={`border-b border-[#f5ede5] last:border-none ${i % 2 === 1 ? "bg-[#fdfaf7]" : ""}`}
-                    >
-                      <td className="py-3.5 px-5 font-medium text-[#3a2519]">
-                        {rule.event}
-                      </td>
-                      <td className="py-3.5 px-5 text-[#7a6050]">
-                        {rule.rate}
-                      </td>
-                      <td className="py-3.5 px-5 text-[#7a6050]">
-                        {rule.timing}
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
+      {/* ════════════════════════════════════════
+          CHAPTER 弐 — THE REASON (Developer Story)
+          ════════════════════════════════════════ */}
+      <section
+        id="reason"
+        className="relative py-32 md:py-40 bg-[#f5ede5] overflow-hidden"
+      >
+        <div className="max-w-[1400px] mx-auto px-6 md:px-16 lg:px-24">
+          {/* Chapter opener */}
+          <div className="grid md:grid-cols-12 gap-8 mb-20 md:mb-28 items-end">
+            <div className="md:col-span-3">
+              <div className="flex items-center gap-3 mb-4">
+                <span className="font-latin text-[11px] uppercase tracking-[0.3em] text-[#c4826e]">
+                  No. 弐
+                </span>
+                <span className="h-px w-12 bg-[#c4826e]/40" />
+              </div>
+              <p className="font-latin text-[11px] italic uppercase tracking-[0.2em] text-[#7a6050]">
+                The Reason
+              </p>
+            </div>
+            <div className="md:col-span-9">
+              <h2 className="font-display font-[500] text-4xl md:text-5xl lg:text-6xl leading-[1.1] tracking-[-0.01em] text-[#3a2519]">
+                作った人も、
+                <br />
+                <span className="italic text-[#c4826e]">同じ悩みを抱えていました。</span>
+              </h2>
             </div>
           </div>
-          <p className="text-center text-xs text-[#b0a090] mt-4">
-            他にも餞別・七五三・長寿祝い（還暦等）・お年玉・誕生日など全13種に対応
-          </p>
-        </div>
-      </section>
 
-      {/* How it works */}
-      <section className="relative py-20 px-5 bg-[#f5ede5] overflow-hidden">
-        <AsanohaPattern className="inset-0 text-[#8b5e3c] opacity-[0.02]" />
-        <div className="relative max-w-3xl mx-auto text-center">
-          <p className="text-sm font-medium text-[#c4826e] tracking-widest mb-3">
-            HOW IT WORKS
-          </p>
-          <h2 className="text-2xl md:text-3xl font-bold mb-14 text-[#3a2519]">
-            つつみの使い方
-          </h2>
-          <div className="grid md:grid-cols-3 gap-10 md:gap-6">
-            {STEPS.map((item, i) => (
-              <div key={item.num} className="relative">
-                {i < STEPS.length - 1 && (
-                  <div className="hidden md:block absolute top-8 -right-3 w-6 border-t border-dashed border-[#c4826e]/30" />
-                )}
-                <div className="w-16 h-16 rounded-2xl bg-white shadow-sm border border-[#efe5da] flex items-center justify-center mx-auto mb-5">
-                  <span className="text-2xl font-bold text-[#c4826e] font-serif">
-                    {item.num}
+          <div className="grid md:grid-cols-12 gap-12 lg:gap-16">
+            {/* LEFT: Image */}
+            <div className="md:col-span-5">
+              <div className="relative aspect-[4/5]">
+                <div className="absolute inset-0 border border-hairline border-[#3a2519]/15 translate-x-3 translate-y-3" />
+                <div className="relative h-full w-full overflow-hidden">
+                  <Image
+                    src="/couple-wrapping.webp"
+                    alt="パートナーと一緒に贈り物を包む"
+                    fill
+                    className="object-cover"
+                  />
+                </div>
+                <div className="absolute -bottom-10 left-0 right-0 flex items-center gap-3 px-1">
+                  <span className="font-latin text-[10px] italic text-[#7a6050]">
+                    fig. 弐
+                  </span>
+                  <span className="h-px flex-1 bg-[#3a2519]/15" />
+                  <span className="font-latin text-[9px] uppercase tracking-[0.25em] text-[#7a6050]">
+                    Together
                   </span>
                 </div>
-                <h3 className="font-bold text-lg mb-2 text-[#3a2519]">
-                  {item.title}
-                </h3>
-                <p className="text-[#7a6050] text-sm leading-relaxed">
-                  {item.desc}
+              </div>
+            </div>
+
+            {/* RIGHT: Editorial copy with drop cap */}
+            <div className="md:col-span-7 md:pl-8 lg:pl-16">
+              <p className="font-body text-base md:text-lg leading-[2] text-[#5a4535] mb-8">
+                <span className="float-left font-display text-[5.5rem] leading-[0.85] mt-2 mr-3 mb-1 text-[#c4826e] font-[700]">
+                  こ
+                </span>
+                こ数年で、結婚と出産を経験しました。ありがたいことに、親戚・職場・友人…いろんなところからお祝いをいただきました。しかも自分の側だけじゃなくて、妻の側にも。両家合わせて、もう何が何だかわからない。
+              </p>
+
+              <div className="my-10 border-l-2 border-[#c4826e] pl-6 py-2">
+                <p className="font-display text-lg md:text-xl leading-[1.9] text-[#3a2519] italic font-[500]">
+                  「田中さんからいくらもらったっけ?」
+                  <br />
+                  「それ、私の叔母からだよ? 別の田中さん」
+                  <br />
+                  「お返し、いくらにする?」
                 </p>
+                <p className="font-latin text-[10px] uppercase tracking-[0.2em] text-[#7a6050] mt-4">
+                  — 毎回この会話を繰り返していた。
+                </p>
+              </div>
+
+              <p className="font-body text-base md:text-lg leading-[2] text-[#5a4535] mb-6">
+                僕も妻もエンジニアなので、すぐにスプレッドシートを作って共有しました。これで一応は管理できました。でも冷静に考えると、
+                <span className="text-[#3a2519] font-medium">
+                  スプシで管理しようってなるのはエンジニアだから
+                </span>
+                であって、普通の人はこんなことしません。
+              </p>
+
+              <p className="font-body text-base md:text-lg leading-[2] text-[#5a4535] mb-10">
+                母親に「お祝い管理どうしてる?」と聞いたら、
+                <span className="text-[#3a2519] font-medium">
+                  「ノートに手書きしてる」
+                </span>
+                と言われました。令和なのに。これが普通の家庭のリアルだと思います。
+              </p>
+
+              {/* Signature */}
+              <div className="flex items-center gap-4 pt-8 border-t border-hairline border-[#3a2519]/15">
+                <div className="w-10 h-10 rounded-full bg-gradient-to-br from-[#c4826e] to-[#a0634f] text-[#faf6f1] flex items-center justify-center font-display font-bold">
+                  D
+                </div>
+                <div>
+                  <p className="font-display text-sm text-[#3a2519] font-medium">
+                    開発者
+                  </p>
+                  <p className="font-latin text-[10px] uppercase tracking-[0.2em] text-[#7a6050]">
+                    Engineer · Writer · User
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Page marker */}
+        <div className="hidden md:flex absolute bottom-10 right-12 items-center gap-3 font-latin text-xs text-[#7a6050]/70">
+          <span className="h-px w-8 bg-[#7a6050]/30" />
+          <span className="tracking-[0.2em]">03 / 07</span>
+        </div>
+      </section>
+
+      {/* ════════════════════════════════════════
+          CHAPTER 参 — THE SOLUTION (Dark editorial spread)
+          ════════════════════════════════════════ */}
+      <section
+        id="solution"
+        className="relative py-32 md:py-44 bg-[#2d1c13] text-[#faf6f1] overflow-hidden"
+      >
+        {/* Faded kanji backdrop */}
+        <div
+          aria-hidden
+          className="absolute inset-0 flex items-center justify-center pointer-events-none select-none"
+        >
+          <span className="font-display text-[50vw] md:text-[28vw] leading-none text-[#faf6f1]/[0.025] font-black">
+            結
+          </span>
+        </div>
+
+        {/* Vertical text decoration */}
+        <div className="hidden lg:block absolute right-10 top-1/2 -translate-y-1/2 z-10">
+          <div className="font-latin text-[10px] uppercase tracking-[0.4em] text-[#faf6f1]/30 vertical-rl">
+            Solution — 四つの作法
+          </div>
+        </div>
+
+        <div className="relative max-w-[1400px] mx-auto px-6 md:px-16 lg:px-24">
+          {/* Chapter opener */}
+          <div className="grid md:grid-cols-12 gap-8 mb-20 md:mb-28 items-end">
+            <div className="md:col-span-3">
+              <div className="flex items-center gap-3 mb-4">
+                <span className="font-latin text-[11px] uppercase tracking-[0.3em] text-[#d4a088]">
+                  No. 参
+                </span>
+                <span className="h-px w-12 bg-[#d4a088]/50" />
+              </div>
+              <p className="font-latin text-[11px] italic uppercase tracking-[0.2em] text-[#faf6f1]/60">
+                The Solution
+              </p>
+            </div>
+            <div className="md:col-span-9">
+              <h2 className="font-display font-[500] text-4xl md:text-5xl lg:text-6xl leading-[1.1] tracking-[-0.01em]">
+                もう迷わない。
+                <br />
+                <span className="italic text-[#d4a088]">もう喧嘩しない。</span>
+              </h2>
+            </div>
+          </div>
+
+          {/* Features as editorial numbered list */}
+          <div className="grid md:grid-cols-2 gap-x-16 gap-y-16 lg:gap-y-20 max-w-5xl">
+            {FEATURES.map((feature, i) => (
+              <div key={feature.label} className="relative group">
+                {/* Huge faded number behind */}
+                <div
+                  aria-hidden
+                  className="absolute -top-8 -left-4 font-display text-[8rem] leading-none text-[#faf6f1]/[0.04] select-none pointer-events-none"
+                >
+                  {String(i + 1).padStart(2, "0")}
+                </div>
+                <div className="relative">
+                  <div className="flex items-center gap-3 mb-4">
+                    <span className="font-latin text-[10px] uppercase tracking-[0.3em] text-[#d4a088]">
+                      {feature.label}
+                    </span>
+                    <span className="h-px w-10 bg-[#d4a088]/40" />
+                  </div>
+                  <h3 className="font-display text-2xl md:text-3xl font-[500] leading-[1.3] mb-4 text-[#faf6f1]">
+                    {feature.title}
+                  </h3>
+                  <p className="font-body text-sm md:text-base leading-[1.9] text-[#c4b0a0]">
+                    {feature.body}
+                  </p>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {/* Inline CTA in dark section */}
+          <div className="mt-24 md:mt-32 pt-12 border-t border-hairline border-[#faf6f1]/15 flex flex-col md:flex-row items-start md:items-end justify-between gap-8">
+            <div>
+              <p className="font-latin text-[10px] uppercase tracking-[0.3em] text-[#d4a088] mb-3">
+                Begin here
+              </p>
+              <p className="font-display text-2xl md:text-3xl text-[#faf6f1] leading-[1.4] max-w-md">
+                今すぐ記録すれば、
+                <br />
+                <span className="italic text-[#d4a088]">一ヶ月後に救われる。</span>
+              </p>
+            </div>
+            <Link
+              href="/sign-up"
+              className="group inline-flex items-center gap-3 bg-[#faf6f1] text-[#2d1c13] pl-7 pr-3 py-3 rounded-full hover:bg-[#d4a088] transition-all duration-500"
+            >
+              <span className="text-sm font-medium tracking-wider">
+                アカウントをつくる
+              </span>
+              <span className="w-9 h-9 rounded-full bg-[#2d1c13] text-[#faf6f1] flex items-center justify-center group-hover:rotate-[-45deg] transition-transform duration-500">
+                <svg
+                  viewBox="0 0 16 16"
+                  className="w-3.5 h-3.5"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2.5"
+                >
+                  <path d="M3 8h10M9 4l4 4-4 4" />
+                </svg>
+              </span>
+            </Link>
+          </div>
+        </div>
+
+        {/* Page marker */}
+        <div className="hidden md:flex absolute bottom-10 right-12 items-center gap-3 font-latin text-xs text-[#faf6f1]/50">
+          <span className="h-px w-8 bg-[#faf6f1]/25" />
+          <span className="tracking-[0.2em]">04 / 07</span>
+        </div>
+      </section>
+
+      {/* ════════════════════════════════════════
+          CHAPTER 肆 — THE RULES (Return rules sidebar)
+          ════════════════════════════════════════ */}
+      <section id="rules" className="relative py-32 md:py-40 overflow-hidden">
+        <div className="max-w-[1400px] mx-auto px-6 md:px-16 lg:px-24">
+          <div className="grid md:grid-cols-12 gap-12 lg:gap-20">
+            {/* LEFT: Intro */}
+            <div className="md:col-span-5 md:sticky md:top-32 self-start">
+              <div className="flex items-center gap-3 mb-6">
+                <span className="font-latin text-[11px] uppercase tracking-[0.3em] text-[#c4826e]">
+                  No. 肆
+                </span>
+                <span className="h-px w-12 bg-[#c4826e]/40" />
+                <span className="font-latin text-[11px] italic uppercase tracking-[0.2em] text-[#7a6050]">
+                  The Rules
+                </span>
+              </div>
+              <h2 className="font-display font-[500] text-4xl md:text-5xl leading-[1.1] tracking-[-0.01em] text-[#3a2519] mb-8">
+                お返しの、
+                <br />
+                <span className="italic text-[#c4826e]">作法帳。</span>
+              </h2>
+              <p className="font-body text-sm md:text-base leading-[2] text-[#5a4535] mb-8">
+                結婚祝いは半返し。出産祝いは三十から半返し。
+                <br />
+                香典は半返し、四十九日後。
+                <br />
+                <br />
+                「半返し」と一言で片づけるけれど、
+                <br />
+                本当はもっと細かい。つつみは全十三種の作法を内蔵して、
+                <br />
+                自動で判定します。
+              </p>
+              <Link
+                href="/calculator"
+                className="inline-flex items-center gap-2 text-sm text-[#c4826e] link-grow"
+              >
+                計算ツールを試す
+                <svg
+                  viewBox="0 0 16 16"
+                  className="w-3 h-3"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                >
+                  <path d="M3 8h10M9 4l4 4-4 4" />
+                </svg>
+              </Link>
+            </div>
+
+            {/* RIGHT: Rules table, editorial style */}
+            <div className="md:col-span-7">
+              <div className="relative">
+                {/* Decorative "保存推奨" vertical label */}
+                <div className="hidden lg:block absolute -left-16 top-0 bottom-0">
+                  <div className="font-display text-[10px] tracking-[0.4em] text-[#c4826e] vertical-rl">
+                    保存推奨
+                  </div>
+                </div>
+
+                <div className="border-t border-hairline border-[#3a2519]/20">
+                  {RETURN_RULES.map((rule, i) => (
+                    <div
+                      key={rule.event}
+                      className="group grid grid-cols-12 gap-4 py-6 border-b border-hairline border-[#3a2519]/15 hover:bg-[#fef8f3] transition-colors px-2 -mx-2"
+                    >
+                      <div className="col-span-1 font-latin text-xs text-[#7a6050] pt-1 tabular-nums">
+                        {String(i + 1).padStart(2, "0")}
+                      </div>
+                      <div className="col-span-4">
+                        <p className="font-display text-base md:text-lg text-[#3a2519] font-[500]">
+                          {rule.event}
+                        </p>
+                      </div>
+                      <div className="col-span-3 flex items-start">
+                        <p className="text-sm text-[#c4826e] font-medium pt-0.5">
+                          {rule.rate}
+                        </p>
+                      </div>
+                      <div className="col-span-4 flex items-start">
+                        <p className="text-sm text-[#7a6050] pt-0.5">
+                          {rule.timing}
+                        </p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+                <p className="font-latin text-[11px] italic text-[#7a6050] mt-6">
+                  * 他にも餞別・七五三・長寿祝いなど、全13種に対応しています。
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div className="hidden md:flex absolute bottom-10 right-12 items-center gap-3 font-latin text-xs text-[#7a6050]/70">
+          <span className="h-px w-8 bg-[#7a6050]/30" />
+          <span className="tracking-[0.2em]">05 / 07</span>
+        </div>
+      </section>
+
+      {/* ════════════════════════════════════════
+          CHAPTER 伍 — FOR YOU (Target personas)
+          ════════════════════════════════════════ */}
+      <section className="relative py-32 md:py-40 bg-[#f5ede5] overflow-hidden">
+        <div className="max-w-[1400px] mx-auto px-6 md:px-16 lg:px-24">
+          <div className="grid md:grid-cols-12 gap-8 mb-20 items-end">
+            <div className="md:col-span-3">
+              <div className="flex items-center gap-3 mb-4">
+                <span className="font-latin text-[11px] uppercase tracking-[0.3em] text-[#c4826e]">
+                  No. 伍
+                </span>
+                <span className="h-px w-12 bg-[#c4826e]/40" />
+              </div>
+              <p className="font-latin text-[11px] italic uppercase tracking-[0.2em] text-[#7a6050]">
+                For You
+              </p>
+            </div>
+            <div className="md:col-span-9">
+              <h2 className="font-display font-[500] text-4xl md:text-5xl lg:text-6xl leading-[1.1] tracking-[-0.01em] text-[#3a2519]">
+                こんな方へ、
+                <br />
+                <span className="italic text-[#c4826e]">おすすめします。</span>
+              </h2>
+            </div>
+          </div>
+
+          <div className="max-w-4xl">
+            {PERSONAS.map((persona, i) => (
+              <div
+                key={persona}
+                className="group grid grid-cols-12 gap-6 py-8 border-b border-hairline border-[#3a2519]/15 hover:bg-[#fef8f3]/60 transition-colors px-2 -mx-2"
+              >
+                <div className="col-span-2 md:col-span-1">
+                  <span className="font-latin text-xl md:text-2xl italic text-[#c4826e] tabular-nums">
+                    {String(i + 1).padStart(2, "0")}
+                  </span>
+                </div>
+                <div className="col-span-10 md:col-span-11 pt-1">
+                  <p className="font-display text-base md:text-xl text-[#3a2519] leading-relaxed font-[400] group-hover:text-[#c4826e] transition-colors">
+                    {persona}
+                  </p>
+                </div>
               </div>
             ))}
           </div>
         </div>
+
+        <div className="hidden md:flex absolute bottom-10 right-12 items-center gap-3 font-latin text-xs text-[#7a6050]/70">
+          <span className="h-px w-8 bg-[#7a6050]/30" />
+          <span className="tracking-[0.2em]">06 / 07</span>
+        </div>
       </section>
 
-      {/* CTA */}
-      <section className="relative py-16 md:py-24 px-5 overflow-hidden">
-        {/* 水彩画像を全幅背景に — しっかり見せる */}
-        <div className="absolute inset-0">
+      {/* ════════════════════════════════════════
+          CHAPTER 結 — BEGIN (Final CTA)
+          ════════════════════════════════════════ */}
+      <section className="relative py-32 md:py-48 overflow-hidden">
+        {/* Watercolor backdrop, more present */}
+        <div className="absolute inset-0 -z-0">
           <Image
             src="/watercolor-gift.webp"
             alt=""
             fill
-            className="object-cover scale-110"
+            className="object-cover opacity-[0.35]"
             aria-hidden="true"
           />
-          <div className="absolute inset-0 bg-[#faf6f1]/60 backdrop-blur-[2px]" />
+          <div className="absolute inset-0 bg-gradient-to-b from-[#faf6f1]/80 via-[#faf6f1]/70 to-[#faf6f1]/90" />
         </div>
 
-        {/* グラスモーフィズムカード */}
-        <div className="relative max-w-2xl mx-auto">
-          <div className="bg-white/70 backdrop-blur-xl rounded-3xl p-8 md:p-12 shadow-2xl shadow-[#3a2519]/8 border border-white/80 text-center">
-            <Image src="/logo.webp" alt="つつみ" width={80} height={80} className="w-20 h-20 mx-auto mb-6 rounded-3xl drop-shadow-lg" />
-            <h2 className="text-3xl md:text-4xl font-bold mb-4 text-[#3a2519] leading-tight">
-              今すぐ記録すれば、
-              <br />
-              1ヶ月後に救われる。
-            </h2>
-            <p className="text-[#7a6050] mb-8 text-base md:text-lg max-w-md mx-auto">
-              結婚祝いのお返しは挙式後1ヶ月以内。
-              <br />
-              期限は待ってくれません。
-              <br />
-              <span className="font-bold text-[#c4826e]">完全無料・30秒で登録</span>
-            </p>
-            <Link href="/sign-up">
-              <Button size="lg" className="bg-[#c4826e] hover:bg-[#a0634f] text-white shadow-lg shadow-[#c4826e]/25 rounded-full text-base px-12 h-14">
-                無料ではじめる
-              </Button>
-            </Link>
+        <div className="relative max-w-[1400px] mx-auto px-6 md:px-16 lg:px-24">
+          <div className="max-w-3xl">
+            <div className="flex items-center gap-3 mb-8">
+              <span className="font-latin text-[11px] uppercase tracking-[0.3em] text-[#c4826e]">
+                No. 結
+              </span>
+              <span className="h-px w-12 bg-[#c4826e]/40" />
+              <span className="font-latin text-[11px] italic uppercase tracking-[0.2em] text-[#7a6050]">
+                Begin
+              </span>
+            </div>
 
-            {/* SNSログイン案内 */}
-            <div className="flex items-center gap-3 mt-5 justify-center">
-              <span className="text-xs text-[#b0a090]">かんたんログイン</span>
-              <div className="flex items-center gap-2">
-                <div className="w-8 h-8 rounded-full bg-white border border-[#e0d5c8] flex items-center justify-center shadow-sm" title="Googleでログイン">
-                  <svg viewBox="0 0 24 24" className="w-4 h-4" fill="none">
-                    <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 0 1-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z" fill="#4285F4" />
-                    <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853" />
-                    <path d="M5.84 14.09A6.68 6.68 0 0 1 5.5 12c0-.72.12-1.42.35-2.09V7.07H2.18A11 11 0 0 0 1 12c0 1.78.42 3.46 1.18 4.93l3.66-2.84z" fill="#FBBC05" />
-                    <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335" />
+            <h2 className="font-display font-[500] text-5xl md:text-6xl lg:text-7xl leading-[1] tracking-[-0.02em] text-[#3a2519] mb-10">
+              さあ、
+              <br />
+              <span className="italic text-[#c4826e]">はじめましょう。</span>
+            </h2>
+
+            <p className="font-body text-base md:text-lg leading-[2] text-[#5a4535] mb-12 max-w-xl">
+              大切な人とのお付き合いを、
+              <br />
+              丁寧に、正直に、忘れずに。
+              <br />
+              <span className="text-[#3a2519] font-medium">
+                完全無料。登録は30秒で済みます。
+              </span>
+            </p>
+
+            <div className="flex items-center gap-6 flex-wrap mb-16">
+              <Link
+                href="/sign-up"
+                className="group inline-flex items-center gap-3 bg-[#3a2519] text-[#faf6f1] pl-8 pr-3 py-3.5 rounded-full hover:bg-[#c4826e] transition-all duration-500"
+              >
+                <span className="text-sm font-medium tracking-wider">
+                  つつみをはじめる
+                </span>
+                <span className="w-10 h-10 rounded-full bg-[#faf6f1] text-[#3a2519] flex items-center justify-center group-hover:rotate-[-45deg] transition-transform duration-500">
+                  <svg
+                    viewBox="0 0 16 16"
+                    className="w-4 h-4"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2.5"
+                  >
+                    <path d="M3 8h10M9 4l4 4-4 4" />
                   </svg>
-                </div>
-                <div className="w-8 h-8 rounded-full bg-white border border-[#e0d5c8] flex items-center justify-center shadow-sm" title="メールでログイン">
-                  <svg viewBox="0 0 24 24" className="w-4 h-4 text-[#8b5e3c]" fill="none" stroke="currentColor" strokeWidth="1.5">
-                    <rect x="3" y="5" width="18" height="14" rx="2" />
-                    <path d="M3 7l9 6 9-6" />
-                  </svg>
-                </div>
+                </span>
+              </Link>
+              <Link href="/calculator" className="text-sm text-[#7a6050] link-grow">
+                まず計算だけ試す
+              </Link>
+            </div>
+
+            {/* Signature line */}
+            <div className="pt-10 border-t border-hairline border-[#3a2519]/20 flex items-center justify-between max-w-xl">
+              <div>
+                <p className="font-display text-lg text-[#3a2519] font-[500]">
+                  つつみ
+                </p>
+                <p className="font-latin text-[10px] uppercase tracking-[0.3em] text-[#7a6050] mt-1">
+                  贈り物を、大切に包む
+                </p>
               </div>
+              <p className="font-latin text-xs italic text-[#7a6050]">
+                tsutsumi.app
+              </p>
             </div>
           </div>
+        </div>
+
+        <div className="hidden md:flex absolute bottom-10 right-12 items-center gap-3 font-latin text-xs text-[#7a6050]/70">
+          <span className="h-px w-8 bg-[#7a6050]/30" />
+          <span className="tracking-[0.2em]">07 / 07</span>
         </div>
       </section>
 
-      {/* Footer */}
-      <footer className="py-10 px-5 border-t border-[#e8ddd0] bg-[#f5ede5]">
-        <div className="max-w-5xl mx-auto">
-          <div className="flex flex-col md:flex-row justify-between items-center gap-6">
-            <div className="flex items-center gap-3">
-              <Image src="/logo.webp" alt="つつみ" width={28} height={28} className="w-7 h-7 rounded-lg" />
-              <div>
-                <span className="font-bold text-[#3a2519]">つつみ</span>
-                <span className="text-sm text-[#7a6050] ml-2">
-                  — 贈り物を、大切に包む。
+      {/* ════════════════════════════════════════
+          FOOTER
+          ════════════════════════════════════════ */}
+      <footer className="relative border-t border-hairline border-[#3a2519]/15 bg-[#f5ede5]">
+        <div className="max-w-[1400px] mx-auto px-6 md:px-16 lg:px-24 py-12 md:py-16">
+          <div className="grid md:grid-cols-12 gap-8 items-start">
+            <div className="md:col-span-5">
+              <div className="flex items-center gap-3 mb-4">
+                <Image
+                  src="/logo.webp"
+                  alt="つつみ"
+                  width={36}
+                  height={36}
+                  className="w-9 h-9 rounded-md"
+                />
+                <span className="font-display text-xl tracking-[0.18em] text-[#3a2519]">
+                  つつみ
                 </span>
               </div>
+              <p className="font-body text-sm text-[#7a6050] leading-relaxed max-w-sm">
+                贈り物を、大切に包む。
+                <br />
+                贈答のお返しを、丁寧に管理するためのウェブアプリ。
+              </p>
             </div>
-            <div className="flex gap-6 text-sm text-[#7a6050]">
-              <Link href="/terms" className="hover:text-[#3a2519] transition-colors">
-                利用規約
-              </Link>
-              <Link href="/privacy" className="hover:text-[#3a2519] transition-colors">
-                プライバシーポリシー
-              </Link>
-              <Link href="/contact" className="hover:text-[#3a2519] transition-colors">
-                お問い合わせ
-              </Link>
+
+            <div className="md:col-span-3">
+              <p className="font-latin text-[10px] uppercase tracking-[0.3em] text-[#c4826e] mb-4">
+                Explore
+              </p>
+              <ul className="space-y-2.5 text-sm text-[#5a4535]">
+                <li>
+                  <Link href="/calculator" className="link-grow hover:text-[#c4826e] transition-colors">
+                    計算ツール
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/sign-up" className="link-grow hover:text-[#c4826e] transition-colors">
+                    アカウント作成
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/sign-in" className="link-grow hover:text-[#c4826e] transition-colors">
+                    ログイン
+                  </Link>
+                </li>
+              </ul>
+            </div>
+
+            <div className="md:col-span-4">
+              <p className="font-latin text-[10px] uppercase tracking-[0.3em] text-[#c4826e] mb-4">
+                Legal
+              </p>
+              <ul className="space-y-2.5 text-sm text-[#5a4535]">
+                <li>
+                  <Link href="/terms" className="link-grow hover:text-[#c4826e] transition-colors">
+                    利用規約
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/privacy" className="link-grow hover:text-[#c4826e] transition-colors">
+                    プライバシーポリシー
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/contact" className="link-grow hover:text-[#c4826e] transition-colors">
+                    お問い合わせ
+                  </Link>
+                </li>
+              </ul>
             </div>
           </div>
-          <p className="text-xs text-[#b0a090] text-center mt-8">
-            &copy; 2026 つつみ All rights reserved.
-          </p>
+
+          <div className="mt-16 pt-8 border-t border-hairline border-[#3a2519]/10 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+            <p className="font-latin text-[10px] uppercase tracking-[0.25em] text-[#7a6050]">
+              © 2026 Tsutsumi — All rights reserved
+            </p>
+            <p className="font-latin text-[10px] italic text-[#7a6050]">
+              Made with 心 in Japan
+            </p>
+          </div>
         </div>
       </footer>
     </div>

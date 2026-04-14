@@ -2,13 +2,32 @@ import type { Metadata, Viewport } from "next";
 import { ClerkProvider } from "@clerk/nextjs";
 import { Analytics } from "@vercel/analytics/next";
 import { jaJP } from "@clerk/localizations";
-import { Noto_Sans_JP } from "next/font/google";
+import { Zen_Old_Mincho, Zen_Kaku_Gothic_New, Fraunces } from "next/font/google";
 import "./globals.css";
 
-const notoSansJP = Noto_Sans_JP({
-  variable: "--font-sans",
+// Japanese display — elegant serif, used for key headlines
+const zenOldMincho = Zen_Old_Mincho({
+  variable: "--font-display",
+  weight: ["500", "700", "900"],
   subsets: ["latin"],
-  weight: ["400", "500", "600", "700"],
+  preload: false,
+  display: "swap",
+});
+
+// Japanese body — modern, refined sans for reading
+const zenKakuGothic = Zen_Kaku_Gothic_New({
+  variable: "--font-body",
+  weight: ["300", "400", "500", "700"],
+  subsets: ["latin"],
+  preload: true,
+  display: "swap",
+});
+
+// Latin accent — variable serif for eyebrows, numerals, captions
+const fraunces = Fraunces({
+  variable: "--font-latin",
+  subsets: ["latin"],
+  display: "swap",
 });
 
 export const viewport: Viewport = {
@@ -54,7 +73,10 @@ export default function RootLayout({
 }>) {
   return (
     <ClerkProvider localization={jaJP}>
-      <html lang="ja" className={`${notoSansJP.variable} h-full antialiased`}>
+      <html
+        lang="ja"
+        className={`${zenOldMincho.variable} ${zenKakuGothic.variable} ${fraunces.variable} h-full antialiased`}
+      >
         <head>
           <script
             type="application/ld+json"
@@ -64,7 +86,8 @@ export default function RootLayout({
                 "@type": "WebApplication",
                 name: "つつみ",
                 url: "https://tsutsumi.app",
-                description: "現金もギフトも、記録するだけでお返し時期と金額を教えてくれる贈答管理アプリ",
+                description:
+                  "現金もギフトも、記録するだけでお返し時期と金額を教えてくれる贈答管理アプリ",
                 applicationCategory: "LifestyleApplication",
                 operatingSystem: "Web",
                 offers: { "@type": "Offer", price: "0", priceCurrency: "JPY" },
@@ -73,7 +96,7 @@ export default function RootLayout({
             }}
           />
         </head>
-        <body className="min-h-full flex flex-col">
+        <body className="min-h-full flex flex-col bg-[#faf6f1]">
           {children}
           <Analytics />
         </body>
