@@ -275,6 +275,36 @@ export default function LandingPage() {
               </div>
             </div>
           </div>
+
+          {/* ターゲット絞り込み */}
+          <div className="mt-14 bg-white rounded-2xl border border-[#efe5da] p-6 md:p-8">
+            <p className="text-sm font-medium text-[#c4826e] tracking-widest mb-3 text-center">
+              FOR YOU
+            </p>
+            <h3 className="text-xl md:text-2xl font-bold text-[#3a2519] mb-6 text-center">
+              こんな方におすすめです
+            </h3>
+            <div className="grid md:grid-cols-2 gap-3">
+              {[
+                "結婚式を終えて、お返しの準備をこれから始める方",
+                "出産のお祝いをたくさんいただいて、誰に何を返すか迷っている方",
+                "両家からのお祝いで、パートナーと情報共有したい方",
+                "ご両親の還暦・法事など、親戚づきあいで悩んでいる方",
+                "毎年のお歳暮・お中元のやりとりを忘れたくない方",
+                "贈答ルールに自信がない方（半返し？三返し？）",
+              ].map((text) => (
+                <div
+                  key={text}
+                  className="flex items-start gap-2.5 p-3 rounded-xl bg-[#fef8f3]"
+                >
+                  <svg viewBox="0 0 20 20" className="w-5 h-5 text-[#c4826e] shrink-0 mt-0.5" fill="none" stroke="currentColor" strokeWidth="2.5">
+                    <path d="M4 10l4 4 8-9" strokeLinecap="round" strokeLinejoin="round" />
+                  </svg>
+                  <p className="text-sm text-[#3a2519] leading-relaxed">{text}</p>
+                </div>
+              ))}
+            </div>
+          </div>
         </div>
       </section>
 
@@ -471,6 +501,63 @@ export default function LandingPage() {
                   記録する
                 </div>
               </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Developer Voice */}
+      <section className="py-20 px-5">
+        <div className="max-w-3xl mx-auto">
+          <div className="text-center mb-10">
+            <p className="text-sm font-medium text-[#c4826e] tracking-widest mb-3">
+              DEVELOPER&apos;S STORY
+            </p>
+            <h2 className="text-2xl md:text-3xl font-bold text-[#3a2519]">
+              作った人も、同じ悩みを抱えていました。
+            </h2>
+          </div>
+
+          <div className="bg-white rounded-2xl border border-[#efe5da] p-6 md:p-8 shadow-sm">
+            <div className="flex items-start gap-4 mb-5">
+              <div className="w-12 h-12 rounded-full bg-gradient-to-br from-[#c4826e] to-[#a0634f] flex items-center justify-center text-white font-bold text-lg shrink-0">
+                D
+              </div>
+              <div>
+                <p className="font-bold text-[#3a2519]">開発者（エンジニア・30代）</p>
+                <p className="text-xs text-[#b0a090]">結婚・第一子出産を経験</p>
+              </div>
+            </div>
+            <div className="space-y-4 text-[#5a4535] leading-relaxed text-sm">
+              <p>
+                ここ数年で、結婚と出産を経験しました。
+                ありがたいことに、親戚・職場・友人……いろんなところからお祝いをいただきました。
+                しかも自分の側だけじゃなくて、妻の側にも。
+              </p>
+              <p className="bg-[#fef8f3] p-4 rounded-xl border-l-4 border-[#c4826e] italic">
+                「田中さんからいくらもらったっけ？」
+                <br />
+                「えっ、それ私の叔母からだよ？あなたの方の田中さんとは別の人」
+                <br />
+                「お返しいくらにする？」「半返しでいいの？」
+                <br />
+                <span className="text-xs text-[#b0a090] not-italic">— 毎回この会話を繰り返していました</span>
+              </p>
+              <p>
+                僕も妻もエンジニアなので、すぐにスプレッドシートを作って共有しました。これで一応は管理できました。
+                でも冷静に考えると、<span className="font-bold text-[#3a2519]">スプシで管理しようってなるのはエンジニアだから</span>であって、普通の人はこんなことしません。
+              </p>
+              <p>
+                母親に「お祝い管理どうしてる？」と聞いたら、
+                <span className="font-bold text-[#3a2519]">「ノートに手書きしてる」</span>
+                と言われました。令和なのに。
+                そして手書きだから当然、夫婦間で共有できていない。これが普通の家庭のリアルだと思います。
+              </p>
+              <p>
+                だから作りました。
+                <span className="font-bold text-[#c4826e]">あの結婚・出産のバタバタの時期に、これがあったらどれだけ楽だったか。</span>
+                同じ悩みを抱えている方に、使ってもらえたら嬉しいです。
+              </p>
             </div>
           </div>
         </div>
