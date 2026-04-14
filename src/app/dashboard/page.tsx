@@ -1,12 +1,25 @@
 import { Suspense } from "react";
 import Link from "next/link";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { getPendingReturns, getRecords, getContacts, getMyGroups } from "@/lib/actions";
+import {
+  getPendingReturns,
+  getRecords,
+  getContacts,
+  getMyGroups,
+} from "@/lib/actions";
 import { ReturnStatusToggle } from "./return-status-toggle";
-import { EmptyState } from "@/components/empty-state";
 import { ScopeSwitcher } from "./scope-switcher";
+import {
+  PageHeader,
+  SectionHeader,
+  PrimaryButton,
+  GhostLink,
+  EditorialEmpty,
+} from "@/components/editorial";
+
+function formatAmount(value: number | null): string {
+  if (value == null) return "—";
+  return `¥${value.toLocaleString()}`;
+}
 
 export default async function DashboardPage({
   searchParams,
@@ -16,12 +29,8 @@ export default async function DashboardPage({
   const { group: groupId } = await searchParams;
   const isGroup = !!groupId;
 
-  // テーマカラー
+  // スコープのアクセント
   const accent = isGroup ? "#6366a0" : "#c4826e";
-  const accentDark = isGroup ? "#4f5280" : "#a0634f";
-  const accentBg = isGroup ? "#ededf5" : "#fef0ea";
-  const gradientFrom = isGroup ? "#6366a0" : "#c4826e";
-  const gradientTo = isGroup ? "#4f5280" : "#a0634f";
 
   const [pendingReturns, records, contacts, groups] = await Promise.all([
     getPendingReturns(groupId),
@@ -33,7 +42,7 @@ export default async function DashboardPage({
   const recentRecords = records.slice(0, 5);
   const visibleReturns = pendingReturns.slice(0, 5);
 
-  // サマリー計算
+  // サマリー集計
   const totalReceived = records
     .filter((r) => r.type === "RECEIVED")
     .reduce((sum, r) => sum + (r.amount ?? 0), 0);
@@ -53,360 +62,314 @@ export default async function DashboardPage({
   const balanceTotal = totalReceived + totalGiven || 1;
   const receivedRatio = Math.round((totalReceived / balanceTotal) * 100);
 
-  // 品目内訳（現金 / ギフト）
   const receivedRecords = records.filter((r) => r.type === "RECEIVED");
-  const receivedCash = receivedRecords.filter((r) => r.itemName === "現金" || !r.itemName).length;
+  const receivedCash = receivedRecords.filter(
+    (r) => r.itemName === "現金" || !r.itemName
+  ).length;
   const receivedGoods = receivedRecords.length - receivedCash;
 
   const givenRecords = records.filter((r) => r.type === "GIVEN");
-  const givenCash = givenRecords.filter((r) => r.itemName === "現金" || !r.itemName).length;
+  const givenCash = givenRecords.filter(
+    (r) => r.itemName === "現金" || !r.itemName
+  ).length;
   const givenGoods = givenRecords.length - givenCash;
 
   return (
-    <div className="space-y-6">
-      {/* スコープ切り替え（ダッシュボードのみ） */}
+    <div className="space-y-14 md:space-y-16">
+      {/* 章扉 */}
+      <PageHeader
+        chapter="No. 壱"
+        eyebrow="Dashboard"
+        title={isGroup ? "ふたりの、" : "わたしの、"}
+        accent="お付き合い帳。"
+        action={
+          <PrimaryButton
+            href={`/dashboard/records/new${groupId ? `?group=${groupId}` : ""}`}
+            variant="dark"
+            size="md"
+          >
+            記録する
+          </PrimaryButton>
+        }
+      />
+
+      {/* スコープ切り替え (グループがある時のみ) */}
       {groups.length > 0 && (
         <Suspense>
           <ScopeSwitcher groups={groups} />
         </Suspense>
       )}
 
-      {/* ヘッダー */}
-      <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold text-[#3a2519]">
-          {isGroup ? "グループ" : "ダッシュボード"}
-        </h1>
-        <Link
-          href={`/dashboard/records/new${groupId ? `?group=${groupId}` : ""}`}
-          className="hidden sm:block"
-        >
-          <Button
-            className="text-white rounded-full px-6"
-            style={{ backgroundColor: accent }}
-          >
-            記録する
-          </Button>
-        </Link>
-      </div>
+      {/* サマリー(編集誌のインフォグラ風) */}
+      <section>
+        <SectionHeader eyebrow="Summary" title="これまでの、やりとり。" />
 
-      {/* サマリー */}
-      <div className="grid grid-cols-2 gap-3">
-        {/* いただいた — グラデーション背景 */}
-        <div
-          className="relative overflow-hidden rounded-2xl p-4 text-white"
-          style={{ background: `linear-gradient(135deg, ${gradientFrom}, ${gradientTo})` }}
-        >
-          <div className="absolute -right-3 -top-3 w-16 h-16 rounded-full bg-white/10" />
-          <div className="absolute -right-1 -bottom-4 w-10 h-10 rounded-full bg-white/5" />
-          <div className="relative">
-            <div className="flex items-center gap-1.5 mb-2">
-              <svg viewBox="0 0 20 20" className="w-4 h-4 opacity-70" fill="none" stroke="currentColor" strokeWidth="1.5">
-                <path d="M10 3l-7 7h4v7h6v-7h4z" />
-              </svg>
-              <p className="text-[10px] font-medium opacity-70 uppercase tracking-wider">いただいた</p>
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-px bg-[#3a2519]/10">
+          {/* いただいた */}
+          <div className="bg-[#faf6f1] p-5 md:p-6">
+            <div className="flex items-center gap-2 mb-3">
+              <span className="w-1 h-1 rounded-full bg-[#c4826e]" />
+              <span className="font-latin text-[9px] uppercase tracking-[0.25em] text-[#7a6050]">
+                Received
+              </span>
             </div>
-            <p className="text-2xl font-bold">
-              ¥{totalReceived.toLocaleString()}
+            <p className="font-display text-xs text-[#7a6050] mb-1">いただいた</p>
+            <p className="font-latin text-2xl md:text-3xl font-[500] text-[#3a2519] tabular-nums">
+              {formatAmount(totalReceived)}
             </p>
-            <p className="text-[10px] mt-1 opacity-60">
-              {records.filter((r) => r.type === "RECEIVED").length}件
+            <p className="font-body text-[10px] text-[#7a6050] mt-2">
+              {receivedRecords.length} 件 ・ 現金 {receivedCash} / ギフト {receivedGoods}
             </p>
-            {receivedRecords.length > 0 && (
-              <div className="flex gap-1.5 mt-2">
-                {receivedCash > 0 && (
-                  <span className="text-[10px] bg-white/15 px-1.5 py-0.5 rounded-full">
-                    現金 {receivedCash}
-                  </span>
-                )}
-                {receivedGoods > 0 && (
-                  <span className="text-[10px] bg-white/15 px-1.5 py-0.5 rounded-full">
-                    ギフト {receivedGoods}
-                  </span>
-                )}
-              </div>
-            )}
+          </div>
+
+          {/* お贈りした */}
+          <div className="bg-[#faf6f1] p-5 md:p-6">
+            <div className="flex items-center gap-2 mb-3">
+              <span className="w-1 h-1 rounded-full bg-[#5a9e6f]" />
+              <span className="font-latin text-[9px] uppercase tracking-[0.25em] text-[#7a6050]">
+                Given
+              </span>
+            </div>
+            <p className="font-display text-xs text-[#7a6050] mb-1">お贈りした</p>
+            <p className="font-latin text-2xl md:text-3xl font-[500] text-[#3a2519] tabular-nums">
+              {formatAmount(totalGiven)}
+            </p>
+            <p className="font-body text-[10px] text-[#7a6050] mt-2">
+              {givenRecords.length} 件 ・ 現金 {givenCash} / ギフト {givenGoods}
+            </p>
+          </div>
+
+          {/* お付き合い */}
+          <div className="bg-[#faf6f1] p-5 md:p-6">
+            <div className="flex items-center gap-2 mb-3">
+              <span className="w-1 h-1 rounded-full bg-[#3a2519]/50" />
+              <span className="font-latin text-[9px] uppercase tracking-[0.25em] text-[#7a6050]">
+                Contacts
+              </span>
+            </div>
+            <p className="font-display text-xs text-[#7a6050] mb-1">お付き合い</p>
+            <p className="font-latin text-2xl md:text-3xl font-[500] text-[#3a2519] tabular-nums">
+              {contacts.length}
+              <span className="font-body text-sm text-[#7a6050] ml-1">名</span>
+            </p>
+          </div>
+
+          {/* お返し達成 */}
+          <div className="bg-[#faf6f1] p-5 md:p-6">
+            <div className="flex items-center gap-2 mb-3">
+              <span
+                className="w-1 h-1 rounded-full"
+                style={{ backgroundColor: accent }}
+              />
+              <span className="font-latin text-[9px] uppercase tracking-[0.25em] text-[#7a6050]">
+                Completion
+              </span>
+            </div>
+            <p className="font-display text-xs text-[#7a6050] mb-1">お返し達成</p>
+            <div className="flex items-baseline gap-3">
+              <p className="font-latin text-2xl md:text-3xl font-[500] text-[#3a2519] tabular-nums">
+                {returnRate}
+                <span className="font-body text-sm text-[#7a6050] ml-1">%</span>
+              </p>
+            </div>
+            <p className="font-body text-[10px] text-[#7a6050] mt-2">
+              {totalReturnsCompleted} / {totalReturnsNeeded} 件完了
+            </p>
           </div>
         </div>
 
-        {/* お贈りした — グラデーション背景 */}
-        <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-[#5a9e6f] to-[#3d7a52] p-4 text-white">
-          <div className="absolute -right-3 -top-3 w-16 h-16 rounded-full bg-white/10" />
-          <div className="absolute -right-1 -bottom-4 w-10 h-10 rounded-full bg-white/5" />
-          <div className="relative">
-            <div className="flex items-center gap-1.5 mb-2">
-              <svg viewBox="0 0 20 20" className="w-4 h-4 opacity-70" fill="none" stroke="currentColor" strokeWidth="1.5">
-                <path d="M10 17l7-7h-4V3H7v7H3z" />
-              </svg>
-              <p className="text-[10px] font-medium opacity-70 uppercase tracking-wider">お贈りした</p>
+        {/* バランスバー */}
+        {records.length > 0 && (
+          <div className="mt-6 pt-6 border-t border-[#3a2519]/10">
+            <div className="flex items-center justify-between gap-4 mb-2 text-xs text-[#7a6050]">
+              <span>いただいた {formatAmount(totalReceived)}</span>
+              <span>{formatAmount(totalGiven)} お贈りした</span>
             </div>
-            <p className="text-2xl font-bold">
-              ¥{totalGiven.toLocaleString()}
+            <div className="h-[3px] bg-[#3a2519]/10 flex">
+              <div
+                className="h-full transition-all duration-700"
+                style={{
+                  width: `${receivedRatio}%`,
+                  backgroundColor: accent,
+                }}
+              />
+              <div
+                className="h-full bg-[#5a9e6f] transition-all duration-700"
+                style={{ width: `${100 - receivedRatio}%` }}
+              />
+            </div>
+            <p className="mt-3 font-latin text-[10px] italic text-[#7a6050] text-center">
+              {totalReceived > totalGiven
+                ? `+ ${formatAmount(totalReceived - totalGiven)} 多くいただいています`
+                : totalGiven > totalReceived
+                  ? `+ ${formatAmount(totalGiven - totalReceived)} 多くお贈りしています`
+                  : "balance"}
             </p>
-            <p className="text-[10px] mt-1 opacity-60">
-              {records.filter((r) => r.type === "GIVEN").length}件
-            </p>
-            {givenRecords.length > 0 && (
-              <div className="flex gap-1.5 mt-2">
-                {givenCash > 0 && (
-                  <span className="text-[10px] bg-white/15 px-1.5 py-0.5 rounded-full">
-                    現金 {givenCash}
-                  </span>
-                )}
-                {givenGoods > 0 && (
-                  <span className="text-[10px] bg-white/15 px-1.5 py-0.5 rounded-full">
-                    ギフト {givenGoods}
-                  </span>
-                )}
-              </div>
-            )}
           </div>
-        </div>
-
-        {/* バランス + お付き合い人数 */}
-        <Card className="border-[#efe5da] rounded-2xl">
-          <CardContent className="pt-4 pb-4 px-4">
-            <div className="flex items-center gap-1.5 mb-3">
-              <svg viewBox="0 0 20 20" className="w-4 h-4 text-[#b0a090]" fill="none" stroke="currentColor" strokeWidth="1.5">
-                <circle cx="7" cy="8" r="3" />
-                <circle cx="13" cy="8" r="3" />
-                <path d="M2 17c0-3 2.5-5 5-5s5 2 5 5M8 17c0-3 2.5-5 5-5s5 2 5 5" />
-              </svg>
-              <p className="text-[10px] font-medium text-[#b0a090] uppercase tracking-wider">お付き合い</p>
-            </div>
-            <p className="text-2xl font-bold text-[#3a2519]">
-              {contacts.length}<span className="text-sm font-normal text-[#b0a090] ml-0.5">人</span>
-            </p>
-            {/* ミニバランスバー */}
-            {records.length > 0 && (
-              <div className="mt-3 space-y-1">
-                <div className="h-1.5 rounded-full bg-[#efe5da] overflow-hidden flex">
-                  <div
-                    className="h-full transition-all"
-                    style={{ backgroundColor: accent, width: `${receivedRatio}%`, borderRadius: receivedRatio === 100 ? "9999px" : "9999px 0 0 9999px" }}
-                  />
-                  <div
-                    className="h-full bg-[#5a9e6f] transition-all"
-                    style={{ width: `${100 - receivedRatio}%`, borderRadius: receivedRatio === 0 ? "9999px" : "0 9999px 9999px 0" }}
-                  />
-                </div>
-                <p className="text-[10px] text-[#b0a090]">
-                  {totalReceived > totalGiven
-                    ? `¥${(totalReceived - totalGiven).toLocaleString()} 多くいただいています`
-                    : totalGiven > totalReceived
-                      ? `¥${(totalGiven - totalReceived).toLocaleString()} 多くお贈りしています`
-                      : "バランスが取れています"}
-                </p>
-              </div>
-            )}
-          </CardContent>
-        </Card>
-
-        {/* お返し達成率 — 大きなリング */}
-        <Card className="border-[#efe5da] rounded-2xl">
-          <CardContent className="pt-4 pb-4 px-4">
-            <div className="flex items-center gap-1.5 mb-2">
-              <svg viewBox="0 0 20 20" className="w-4 h-4 text-[#b0a090]" fill="none" stroke="currentColor" strokeWidth="1.5">
-                <path d="M10 2a8 8 0 1 1 0 16 8 8 0 0 1 0-16z" />
-                <path d="M7 10l2 2 4-4" />
-              </svg>
-              <p className="text-[10px] font-medium text-[#b0a090] uppercase tracking-wider">お返し達成</p>
-            </div>
-            <div className="flex items-center gap-3">
-              {/* リングチャート */}
-              <svg width="56" height="56" viewBox="0 0 56 56" className="shrink-0">
-                <circle cx="28" cy="28" r="22" fill="none" stroke="#efe5da" strokeWidth="5" />
-                <circle
-                  cx="28" cy="28" r="22" fill="none"
-                  stroke={returnRate === 100 ? "#5a9e6f" : accent}
-                  strokeWidth="5"
-                  strokeLinecap="round"
-                  strokeDasharray={`${returnRate * 1.382} 138.2`}
-                  transform="rotate(-90 28 28)"
-                />
-                <text
-                  x="28" y="30"
-                  textAnchor="middle"
-                  className="text-xs font-bold"
-                  fill="#3a2519"
-                >
-                  {returnRate}%
-                </text>
-              </svg>
-              <div className="text-[10px] text-[#7a6050] space-y-0.5">
-                <p>{totalReturnsCompleted} / {totalReturnsNeeded} 件完了</p>
-                {pendingReturns.length > 0 && (
-                  <p className="text-[#c4826e] font-medium">
-                    {pendingReturns.length}件が未済
-                  </p>
-                )}
-                {returnRate === 100 && totalReturnsNeeded > 0 && (
-                  <p className="text-[#5a9e6f] font-medium">すべて完了!</p>
-                )}
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
+        )}
+      </section>
 
       {/* お返し未済 */}
-      <Card className="border-[#efe5da]">
-        <CardHeader className="pb-3">
-          <div className="flex items-center justify-between">
-            <CardTitle className="text-lg text-[#3a2519]">
-              お返し未済
-            </CardTitle>
-            <div className="flex items-center gap-2">
-              {pendingReturns.length > 0 && (
-                <Badge className="text-white" style={{ backgroundColor: accent }}>
-                  {pendingReturns.length}件
-                </Badge>
-              )}
-              {pendingReturns.length > 5 && (
-                <Link
-                  href="/dashboard/returns"
-                  className="text-sm text-[#c4826e] hover:underline"
-                >
-                  すべて見る
-                </Link>
-              )}
-            </div>
-          </div>
-        </CardHeader>
-        <CardContent>
-          {pendingReturns.length === 0 ? (
-            <p className="text-sm text-[#7a6050]">
-              お返しが必要な記録はありません
-            </p>
-          ) : (
-            <div className="space-y-3">
-              {visibleReturns.map((record) => {
-                const daysLeft = record.returnDueDate
-                  ? Math.ceil(
-                      (record.returnDueDate.getTime() - Date.now()) /
-                        (1000 * 60 * 60 * 24)
-                    )
-                  : null;
+      <section>
+        <SectionHeader
+          eyebrow={`Pending · ${pendingReturns.length}`}
+          title="お返しを、お忘れなく。"
+          action={
+            pendingReturns.length > 5 ? (
+              <GhostLink href="/dashboard/returns">すべて見る</GhostLink>
+            ) : null
+          }
+        />
 
-                return (
-                  <div
-                    key={record.id}
-                    className="p-3 bg-[#fef8f3] rounded-xl border border-[#f5ede5]"
-                  >
-                    <div className="flex items-start justify-between gap-2">
-                      <div className="min-w-0">
-                        <p className="font-medium text-[#3a2519] text-sm">
-                          {record.contact.name}
-                        </p>
-                        <p className="text-xs text-[#7a6050] mt-0.5">
-                          {record.eventType}
-                          {record.amount != null ? ` ・ ¥${record.amount.toLocaleString()}` : ""}
-                        </p>
-                      </div>
-                      {daysLeft !== null && (
-                        <span
-                          className={`text-xs font-medium px-2 py-1 rounded-full shrink-0 ${
-                            daysLeft < 0
-                              ? "bg-red-100 text-red-700"
-                              : daysLeft <= 7
-                                ? "bg-orange-100 text-orange-700"
-                                : "bg-[#fef0ea] text-[#c4826e]"
-                          }`}
-                        >
-                          {daysLeft < 0
-                            ? `${Math.abs(daysLeft)}日超過`
-                            : `あと${daysLeft}日`}
-                        </span>
-                      )}
-                    </div>
-                    {record.returnAmount && (
-                      <p className="text-xs text-[#c4826e] mt-1.5">
-                        お返し目安: ¥{record.returnAmount.toLocaleString()}
-                      </p>
-                    )}
+        {pendingReturns.length === 0 ? (
+          <EditorialEmpty
+            title="お返し未済は、ございません。"
+            description="お付き合いは、すべて整っています。"
+          />
+        ) : (
+          <div className="space-y-0">
+            {visibleReturns.map((record, i) => {
+              const daysLeft = record.returnDueDate
+                ? Math.ceil(
+                    (record.returnDueDate.getTime() - Date.now()) /
+                      (1000 * 60 * 60 * 24)
+                  )
+                : null;
+
+              const daysLabel =
+                daysLeft === null
+                  ? null
+                  : daysLeft < 0
+                    ? `${Math.abs(daysLeft)}日超過`
+                    : `あと${daysLeft}日`;
+              const daysColor =
+                daysLeft === null
+                  ? "text-[#7a6050]"
+                  : daysLeft < 0
+                    ? "text-red-600"
+                    : daysLeft <= 7
+                      ? "text-orange-600"
+                      : "text-[#c4826e]";
+
+              return (
+                <div
+                  key={record.id}
+                  className="group grid grid-cols-12 gap-3 py-5 border-b border-[#3a2519]/12"
+                >
+                  <div className="col-span-1 font-latin text-[11px] text-[#7a6050] pt-1 tabular-nums">
+                    {String(i + 1).padStart(2, "0")}
+                  </div>
+                  <div className="col-span-7 md:col-span-8">
+                    <p className="font-display text-base md:text-lg font-[500] text-[#3a2519] leading-snug">
+                      {record.contact.name}
+                    </p>
+                    <p className="font-body text-xs text-[#7a6050] mt-1">
+                      {record.eventType}
+                      {record.amount != null
+                        ? ` ・ ${formatAmount(record.amount)}`
+                        : ""}
+                      {record.returnAmount
+                        ? ` ・ お返し目安 ${formatAmount(record.returnAmount)}`
+                        : ""}
+                    </p>
                     {(record.itemName || record.memo) && (
-                      <p className="text-xs text-[#b0a090] mt-1">
+                      <p className="font-body text-[10px] text-[#b0a090] mt-1">
                         {record.itemName && <>品名: {record.itemName}</>}
                         {record.itemName && record.memo && " ／ "}
                         {record.memo && <>メモ: {record.memo}</>}
                       </p>
                     )}
-                    <div className="mt-2 flex justify-end">
-                      <ReturnStatusToggle recordId={record.id} />
-                    </div>
                   </div>
-                );
-              })}
-            </div>
-          )}
-        </CardContent>
-      </Card>
+                  <div className="col-span-4 md:col-span-3 flex flex-col items-end justify-center gap-2">
+                    {daysLabel && (
+                      <span
+                        className={`font-latin text-[11px] italic tabular-nums ${daysColor}`}
+                      >
+                        {daysLabel}
+                      </span>
+                    )}
+                    <ReturnStatusToggle recordId={record.id} />
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        )}
+      </section>
 
-      {/* 直近の記録 */}
-      <Card className="border-[#efe5da]">
-        <CardHeader className="pb-3">
-          <div className="flex items-center justify-between">
-            <CardTitle className="text-lg text-[#3a2519]">
-              最近の記録
-            </CardTitle>
-            {records.length > 5 && (
-              <Link
-                href="/dashboard/records"
-                className="text-sm text-[#c4826e] hover:underline"
+      {/* 最近の記録 */}
+      <section>
+        <SectionHeader
+          eyebrow="Recent records"
+          title="最近の、記録。"
+          action={
+            records.length > 5 ? (
+              <GhostLink
+                href={`/dashboard/records${groupId ? `?group=${groupId}` : ""}`}
               >
                 すべて見る
-              </Link>
-            )}
-          </div>
-        </CardHeader>
-        <CardContent>
-          {recentRecords.length === 0 ? (
-            <EmptyState message="まだ贈答記録がありません">
-              <Link href={`/dashboard/records/new${groupId ? `?group=${groupId}` : ""}`}>
-                <Button
-                  variant="outline"
-                  className="rounded-full"
-                  style={{ borderColor: accent, color: accent }}
-                >
-                  最初の記録をつける
-                </Button>
-              </Link>
-            </EmptyState>
-          ) : (
-            <div className="space-y-2">
-              {recentRecords.map((record) => (
-                <div
-                  key={record.id}
-                  className="flex items-center justify-between p-3 rounded-xl hover:bg-[#fef8f3] transition-colors"
-                >
-                  <div className="flex items-center gap-3">
-                    <div
-                      className={`w-8 h-8 rounded-lg flex items-center justify-center text-xs font-bold ${
-                        record.type === "RECEIVED"
-                          ? isGroup ? "bg-[#ededf5] text-[#6366a0]" : "bg-[#fef0ea] text-[#c4826e]"
-                          : "bg-[#e8f5e9] text-[#4caf50]"
-                      }`}
-                    >
-                      {record.type === "RECEIVED" ? "受" : "贈"}
-                    </div>
-                    <div>
-                      <p className="font-medium text-sm text-[#3a2519]">
-                        {record.contact.name}
-                      </p>
-                      <p className="text-xs text-[#7a6050]">
-                        {record.eventType} ・{" "}
+              </GhostLink>
+            ) : null
+          }
+        />
+
+        {recentRecords.length === 0 ? (
+          <EditorialEmpty
+            title="まだ、記録がありません。"
+            description="最初の一件を、丁寧に残しましょう。"
+            action={
+              <PrimaryButton
+                href={`/dashboard/records/new${groupId ? `?group=${groupId}` : ""}`}
+                variant="dark"
+              >
+                最初の記録
+              </PrimaryButton>
+            }
+          />
+        ) : (
+          <div>
+            {recentRecords.map((record, i) => (
+              <div
+                key={record.id}
+                className="group grid grid-cols-12 gap-3 py-5 border-b border-[#3a2519]/12 hover:bg-[#fef8f3]/60 transition-colors"
+              >
+                <div className="col-span-1 font-latin text-[11px] text-[#7a6050] pt-1 tabular-nums">
+                  {String(i + 1).padStart(2, "0")}
+                </div>
+                <div className="col-span-8 flex items-start gap-3">
+                  <span
+                    className={`font-display text-xs font-medium px-2 py-0.5 mt-0.5 shrink-0 ${
+                      record.type === "RECEIVED"
+                        ? "bg-[#c4826e]/10 text-[#c4826e]"
+                        : "bg-[#5a9e6f]/10 text-[#5a9e6f]"
+                    }`}
+                  >
+                    {record.type === "RECEIVED" ? "受" : "贈"}
+                  </span>
+                  <div className="min-w-0">
+                    <p className="font-display text-base font-[500] text-[#3a2519]">
+                      {record.contact.name}
+                    </p>
+                    <p className="font-body text-xs text-[#7a6050] mt-0.5">
+                      {record.eventType} ・{" "}
+                      <span className="font-latin italic">
                         {record.date.toLocaleDateString("ja-JP")}
-                      </p>
-                    </div>
+                      </span>
+                    </p>
                   </div>
-                  <span className="font-medium text-sm text-[#3a2519]">
-                    {record.amount != null ? `¥${record.amount.toLocaleString()}` : "金額不明"}
+                </div>
+                <div className="col-span-3 flex items-center justify-end">
+                  <span className="font-latin text-sm font-[500] text-[#3a2519] tabular-nums">
+                    {record.amount != null
+                      ? formatAmount(record.amount)
+                      : "—"}
                   </span>
                 </div>
-              ))}
-            </div>
-          )}
-        </CardContent>
-      </Card>
+              </div>
+            ))}
+          </div>
+        )}
+      </section>
     </div>
   );
 }

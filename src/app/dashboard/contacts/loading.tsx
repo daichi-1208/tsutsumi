@@ -1,17 +1,14 @@
 export default function ContactsLoading() {
   return (
-    <div className="space-y-6 animate-pulse">
-      <div className="h-8 w-24 bg-[#efe5da] rounded-lg" />
-      <div className="bg-white rounded-2xl border border-[#efe5da] p-5">
-        <div className="flex gap-3">
-          <div className="h-10 flex-1 bg-[#fef8f3] rounded-xl" />
-          <div className="h-10 flex-1 bg-[#fef8f3] rounded-xl" />
-          <div className="h-10 w-16 bg-[#efe5da] rounded-xl" />
-        </div>
+    <div className="space-y-10 animate-pulse">
+      <div className="space-y-4">
+        <div className="h-3 w-24 bg-[#3a2519]/10" />
+        <div className="h-12 w-64 bg-[#3a2519]/10" />
       </div>
-      <div className="bg-white rounded-2xl border border-[#efe5da] p-4 space-y-2">
+      <div className="h-40 bg-[#3a2519]/5 border border-[#3a2519]/10" />
+      <div className="space-y-0 border-t border-[#3a2519]/15">
         {[...Array(4)].map((_, i) => (
-          <div key={i} className="h-14 bg-[#fef8f3] rounded-xl" />
+          <div key={i} className="h-16 border-b border-[#3a2519]/10" />
         ))}
       </div>
     </div>

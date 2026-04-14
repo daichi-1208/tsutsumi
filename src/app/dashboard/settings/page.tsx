@@ -1,87 +1,104 @@
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { getMyGroups } from "@/lib/actions";
 import { InviteLinkCard } from "./invite-link-card";
 import { CreateGroupForm } from "./create-group-form";
+import { PageHeader, SectionHeader } from "@/components/editorial";
 
 export default async function SettingsPage() {
   const groups = await getMyGroups();
 
   return (
-    <div className="space-y-6">
-      <h1 className="text-2xl font-bold text-[#3a2519]">設定</h1>
+    <div>
+      <PageHeader
+        chapter="No. 肆"
+        eyebrow="Settings"
+        title="設定と、"
+        accent="共有。"
+        description="パートナーと記録を一緒に管理できます。"
+      />
 
-      {/* グループ一覧 */}
-      <Card className="border-[#efe5da]">
-        <CardHeader className="pb-3">
-          <CardTitle className="text-lg text-[#3a2519]">
-            共有グループ
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          {groups.length === 0 ? (
-            <p className="text-sm text-[#7a6050]">
-              まだグループがありません。パートナーと一緒に管理したい場合はグループを作成してください。
-            </p>
-          ) : (
-            groups.map((group) => (
+      <section className="mb-14">
+        <SectionHeader eyebrow="Groups" title="共有グループ。" />
+
+        {groups.length === 0 ? (
+          <p className="font-display text-sm italic text-[#7a6050] mb-8">
+            まだグループがありません。
+            <br />
+            パートナーと一緒に管理したい場合は、グループを作成してください。
+          </p>
+        ) : (
+          <div className="space-y-8 mb-8">
+            {groups.map((group) => (
               <div
                 key={group.id}
-                className="p-4 bg-[#fef8f3] rounded-xl border border-[#f5ede5] space-y-3"
+                className="bg-white/60 border border-[#3a2519]/15 p-6 md:p-8"
               >
-                <div className="flex items-center justify-between">
+                {/* グループヘッダー */}
+                <div className="flex items-start justify-between gap-4 mb-6 pb-5 border-b border-[#3a2519]/10">
                   <div>
-                    <p className="font-medium text-[#3a2519]">{group.name}</p>
-                    <p className="text-xs text-[#7a6050] mt-0.5">
-                      {group._count.contacts}人の連絡先 ・ {group._count.records}件の記録
+                    <p className="font-display text-xl font-[500] text-[#3a2519] mb-1">
+                      {group.name}
+                    </p>
+                    <p className="font-latin text-[10px] italic text-[#7a6050] uppercase tracking-wider">
+                      {group._count.contacts} contacts · {group._count.records} records
                     </p>
                   </div>
                 </div>
 
                 {/* メンバー */}
-                <div className="space-y-2">
-                  <p className="text-[10px] font-medium text-[#b0a090] uppercase tracking-wider">
-                    メンバー
+                <div className="mb-6">
+                  <p className="font-latin text-[10px] uppercase tracking-[0.3em] text-[#c4826e] mb-4">
+                    Members
                   </p>
-                  {group.members.map((member) => (
-                    <div
-                      key={member.id}
-                      className="flex items-center gap-3 p-2 bg-white rounded-lg"
-                    >
-                      <div className="w-8 h-8 rounded-full bg-gradient-to-br from-[#c4826e] to-[#a0634f] flex items-center justify-center text-white text-xs font-bold">
-                        {member.user.name.charAt(0)}
+                  <div className="space-y-3">
+                    {group.members.map((member) => (
+                      <div
+                        key={member.id}
+                        className="flex items-center gap-4"
+                      >
+                        <div className="w-9 h-9 bg-gradient-to-br from-[#c4826e] to-[#a0634f] text-[#faf6f1] flex items-center justify-center font-display text-sm font-[500]">
+                          {member.user.name.charAt(0)}
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <p className="font-body text-sm text-[#3a2519] truncate flex items-center gap-2">
+                            {member.user.name}
+                            {member.user.id === group.ownerId && (
+                              <span className="font-latin text-[9px] italic uppercase tracking-widest text-[#c4826e]">
+                                owner
+                              </span>
+                            )}
+                          </p>
+                          <p className="font-body text-[11px] text-[#7a6050] truncate">
+                            {member.user.email}
+                          </p>
+                        </div>
                       </div>
-                      <div>
-                        <p className="text-sm font-medium text-[#3a2519]">
-                          {member.user.name}
-                          {member.user.id === group.ownerId && (
-                            <span className="ml-1.5 text-[10px] text-[#c4826e] bg-[#fef0ea] px-1.5 py-0.5 rounded-full">
-                              オーナー
-                            </span>
-                          )}
-                        </p>
-                        <p className="text-xs text-[#7a6050]">{member.user.email}</p>
-                      </div>
-                    </div>
-                  ))}
+                    ))}
+                  </div>
                 </div>
 
-                {/* 招待リンク（2人未満の場合） */}
-                {group.members.length < 2 && (
-                  <InviteLinkCard inviteCode={group.inviteCode} groupId={group.id} />
-                )}
-                {group.members.length >= 2 && (
-                  <p className="text-xs text-[#5a9e6f] bg-[#e8f5e9] px-3 py-2 rounded-lg">
-                    パートナーと共有中
-                  </p>
+                {/* 招待 or 共有中 */}
+                {group.members.length < 2 ? (
+                  <div className="pt-5 border-t border-[#3a2519]/10">
+                    <InviteLinkCard
+                      inviteCode={group.inviteCode}
+                      groupId={group.id}
+                    />
+                  </div>
+                ) : (
+                  <div className="pt-5 border-t border-[#3a2519]/10">
+                    <p className="font-display text-sm italic text-[#5a9e6f] flex items-center gap-2">
+                      <span className="w-1.5 h-1.5 rounded-full bg-[#5a9e6f]" />
+                      パートナーと共有中
+                    </p>
+                  </div>
                 )}
               </div>
-            ))
-          )}
+            ))}
+          </div>
+        )}
 
-          {/* グループ作成（まだグループがない場合のみ） */}
-          {groups.length === 0 && <CreateGroupForm />}
-        </CardContent>
-      </Card>
+        {groups.length === 0 && <CreateGroupForm />}
+      </section>
     </div>
   );
 }

@@ -4,10 +4,10 @@ import Link from "next/link";
 import { usePathname, useSearchParams } from "next/navigation";
 
 const NAV_ITEMS = [
-  { href: "/dashboard", label: "ホーム", icon: "◉", exact: true },
-  { href: "/dashboard/records", label: "記録", icon: "◫", exact: false },
-  { href: "/dashboard/contacts", label: "連絡先", icon: "◎", exact: false },
-  { href: "/dashboard/settings", label: "設定", icon: "⚙", exact: false },
+  { href: "/dashboard", label: "ホーム", latin: "Home", num: "壱", exact: true },
+  { href: "/dashboard/records", label: "贈答", latin: "Records", num: "弐", exact: false },
+  { href: "/dashboard/contacts", label: "連絡先", latin: "Contacts", num: "参", exact: false },
+  { href: "/dashboard/settings", label: "設定", latin: "Settings", num: "肆", exact: false },
 ];
 
 function useGroupParam() {
@@ -19,13 +19,13 @@ function buildHref(base: string, groupId: string | null) {
   return groupId ? `${base}?group=${groupId}` : base;
 }
 
-/* デスクトップ: ヘッダー内の横並びナビ */
+/* デスクトップ: 水平ナビ(編集誌的な見出し並び) */
 export function DashboardNav() {
   const pathname = usePathname();
   const groupId = useGroupParam();
 
   return (
-    <nav className="hidden sm:flex items-center gap-1">
+    <nav className="hidden md:flex items-center gap-1">
       {NAV_ITEMS.map((item) => {
         const isActive = item.exact
           ? pathname === item.href
@@ -35,15 +35,23 @@ export function DashboardNav() {
           <Link
             key={item.href}
             href={buildHref(item.href, groupId)}
-            className={`px-3 py-1.5 text-sm rounded-lg transition-colors ${
+            className={`group relative px-4 py-2 text-sm transition-colors ${
               isActive
-                ? groupId
-                  ? "bg-[#6366a0]/10 text-[#6366a0] font-medium"
-                  : "bg-[#c4826e]/10 text-[#c4826e] font-medium"
-                : "text-[#7a6050] hover:text-[#3a2519] hover:bg-[#f0e8df]"
+                ? "text-[#3a2519]"
+                : "text-[#7a6050] hover:text-[#3a2519]"
             }`}
           >
-            {item.label}
+            <span className="font-body tracking-wide">{item.label}</span>
+            {/* アクティブインジケーター */}
+            <span
+              className={`absolute left-4 right-4 -bottom-px h-px transition-all duration-500 ${
+                isActive
+                  ? groupId
+                    ? "bg-[#6366a0] scale-x-100"
+                    : "bg-[#c4826e] scale-x-100"
+                  : "bg-transparent scale-x-0"
+              }`}
+            />
           </Link>
         );
       })}
@@ -51,7 +59,7 @@ export function DashboardNav() {
   );
 }
 
-/* モバイル: 画面下部の固定タブバー */
+/* モバイル: 下部タブバー */
 export function MobileTabBar() {
   const pathname = usePathname();
   const groupId = useGroupParam();
@@ -62,44 +70,59 @@ export function MobileTabBar() {
   const accentColor = groupId ? "#6366a0" : "#c4826e";
 
   return (
-    <nav className="sm:hidden fixed bottom-0 left-0 right-0 z-50 bg-white/90 backdrop-blur-md border-t border-[#e8ddd0] safe-bottom">
-      <div className="flex items-center justify-around h-14">
-        {NAV_ITEMS.map((item) => {
+    <nav className="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-[#faf6f1]/95 backdrop-blur-md border-t border-[#3a2519]/10 safe-bottom">
+      <div className="grid grid-cols-5 items-center h-16">
+        {NAV_ITEMS.slice(0, 2).map((item) => {
           const isActive = item.exact
             ? pathname === item.href
             : pathname.startsWith(item.href);
-
           return (
             <Link
               key={item.href}
               href={buildHref(item.href, groupId)}
-              className={`flex flex-col items-center gap-0.5 px-4 py-1 rounded-lg transition-colors ${
-                isActive ? "" : "text-[#b0a090]"
-              }`}
-              style={isActive ? { color: accentColor } : undefined}
+              className="flex flex-col items-center justify-center gap-1 h-full"
+              style={isActive ? { color: accentColor } : { color: "#7a6050" }}
             >
-              <span className="text-lg leading-none">{item.icon}</span>
-              <span className="text-[10px] font-medium">{item.label}</span>
+              <span className="font-latin text-[9px] italic">{item.latin}</span>
+              <span className="font-body text-[11px] font-medium">{item.label}</span>
             </Link>
           );
         })}
+
+        {/* 中央: 記録ボタン */}
         <Link
           href={buildHref("/dashboard/records/new", groupId)}
-          className="flex flex-col items-center gap-0.5 px-4 py-1"
+          className="flex flex-col items-center justify-center gap-0.5 h-full"
         >
           <span
-            className="w-8 h-8 rounded-full text-white flex items-center justify-center text-lg leading-none shadow-md"
+            className="w-11 h-11 rounded-full text-white flex items-center justify-center shadow-lg"
             style={{ backgroundColor: accentColor }}
           >
-            +
+            <svg viewBox="0 0 16 16" className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2.5">
+              <path d="M8 3v10M3 8h10" strokeLinecap="round" />
+            </svg>
           </span>
-          <span
-            className="text-[10px] font-medium"
-            style={{ color: accentColor }}
-          >
-            記録
+          <span className="font-latin text-[9px] italic" style={{ color: accentColor }}>
+            new
           </span>
         </Link>
+
+        {NAV_ITEMS.slice(2).map((item) => {
+          const isActive = item.exact
+            ? pathname === item.href
+            : pathname.startsWith(item.href);
+          return (
+            <Link
+              key={item.href}
+              href={buildHref(item.href, groupId)}
+              className="flex flex-col items-center justify-center gap-1 h-full"
+              style={isActive ? { color: accentColor } : { color: "#7a6050" }}
+            >
+              <span className="font-latin text-[9px] italic">{item.latin}</span>
+              <span className="font-body text-[11px] font-medium">{item.label}</span>
+            </Link>
+          );
+        })}
       </div>
     </nav>
   );

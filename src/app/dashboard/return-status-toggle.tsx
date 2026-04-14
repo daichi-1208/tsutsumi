@@ -10,13 +10,11 @@ export function ReturnStatusToggle({ recordId }: { recordId: string }) {
     <button
       disabled={isPending}
       onClick={() =>
-        startTransition(() =>
-          updateReturnStatus(recordId, "COMPLETED")
-        )
+        startTransition(() => updateReturnStatus(recordId, "COMPLETED"))
       }
-      className="text-xs px-3 py-1.5 rounded-full border border-[#c4826e] text-[#c4826e] hover:bg-[#c4826e] hover:text-white transition-colors disabled:opacity-50"
+      className="font-latin text-[10px] italic uppercase tracking-[0.2em] text-[#c4826e] hover:text-[#a0634f] transition-colors disabled:opacity-50 whitespace-nowrap"
     >
-      {isPending ? "..." : "済みにする"}
+      {isPending ? "..." : "Mark as done →"}
     </button>
   );
 }

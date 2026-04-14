@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useTransition } from "react";
-import { Button } from "@/components/ui/button";
 import { regenerateInviteCode } from "@/lib/actions";
 import { useRouter } from "next/navigation";
 
@@ -35,35 +34,36 @@ export function InviteLinkCard({
   }
 
   return (
-    <div className="space-y-2">
-      <p className="text-[10px] font-medium text-[#b0a090] uppercase tracking-wider">
-        招待リンク
+    <div>
+      <p className="font-latin text-[10px] uppercase tracking-[0.3em] text-[#c4826e] mb-3">
+        Invite link
       </p>
-      <p className="text-xs text-[#7a6050]">
+      <p className="font-body text-xs text-[#7a6050] leading-relaxed mb-4">
         パートナーにこのリンクを送って、一緒に管理しましょう。
       </p>
-      <div className="flex gap-2">
-        <div className="flex-1 bg-white rounded-lg px-3 py-2 text-xs text-[#7a6050] truncate border border-[#e8ddd0]">
+
+      <div className="flex items-stretch gap-0 mb-3">
+        <div className="flex-1 bg-white border border-[#3a2519]/20 px-4 py-2.5 font-latin text-[11px] text-[#7a6050] truncate tabular-nums">
           {inviteUrl}
         </div>
-        <Button
+        <button
           onClick={handleCopy}
-          size="sm"
-          className={`shrink-0 rounded-xl ${
+          className={`shrink-0 px-5 py-2.5 -ml-px border font-body text-xs font-medium transition-colors ${
             copied
-              ? "bg-[#5a9e6f] hover:bg-[#5a9e6f] text-white"
-              : "bg-[#c4826e] hover:bg-[#a0634f] text-white"
+              ? "bg-[#5a9e6f] text-[#faf6f1] border-[#5a9e6f]"
+              : "bg-[#3a2519] text-[#faf6f1] border-[#3a2519] hover:bg-[#c4826e] hover:border-[#c4826e]"
           }`}
         >
-          {copied ? "コピー済み" : "コピー"}
-        </Button>
+          {copied ? "Copied ✓" : "Copy"}
+        </button>
       </div>
+
       <button
         onClick={handleRegenerate}
         disabled={isPending}
-        className="text-[10px] text-[#b0a090] hover:text-[#7a6050] transition-colors"
+        className="font-latin text-[10px] italic text-[#b0a090] hover:text-[#7a6050] transition-colors"
       >
-        {isPending ? "再生成中..." : "リンクを再生成する"}
+        {isPending ? "Regenerating..." : "→ Regenerate link"}
       </button>
     </div>
   );

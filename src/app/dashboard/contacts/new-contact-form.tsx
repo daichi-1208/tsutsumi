@@ -2,10 +2,8 @@
 
 import { useTransition } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Card, CardContent } from "@/components/ui/card";
 import { createContact } from "@/lib/actions";
+import { FieldLabel, PrimaryButton } from "@/components/editorial";
 
 export function NewContactForm() {
   const router = useRouter();
@@ -22,45 +20,56 @@ export function NewContactForm() {
   }
 
   return (
-    <Card className="border-[#efe5da]">
-      <CardContent className="pt-5">
-        <form action={handleSubmit} className="space-y-3">
-          <div className="flex flex-col sm:flex-row gap-3">
-            <Input
+    <div className="bg-white/60 border border-[#3a2519]/15 p-6 md:p-8">
+      <div className="flex items-center gap-3 mb-5">
+        <span className="font-latin text-[10px] uppercase tracking-[0.3em] text-[#c4826e]">
+          Add new
+        </span>
+        <span className="h-px flex-1 bg-[#3a2519]/10" />
+      </div>
+      <form action={handleSubmit} className="space-y-5">
+        <div className="grid md:grid-cols-3 gap-4">
+          <div>
+            <FieldLabel>名前</FieldLabel>
+            <input
               name="name"
-              placeholder="名前"
+              placeholder="田中太郎"
               required
-              className="border-[#e8ddd0] rounded-xl"
+              className="w-full h-11 bg-white border border-[#3a2519]/20 px-4 font-body text-sm text-[#3a2519] focus:outline-none focus:border-[#c4826e] transition-colors"
             />
-            <Input
+          </div>
+          <div>
+            <FieldLabel optional>関係</FieldLabel>
+            <input
               name="relationship"
-              placeholder="関係（親戚・職場・友人）"
-              className="border-[#e8ddd0] rounded-xl"
+              placeholder="親戚・職場・友人"
+              className="w-full h-11 bg-white border border-[#3a2519]/20 px-4 font-body text-sm text-[#3a2519] focus:outline-none focus:border-[#c4826e] transition-colors"
             />
-            <div className="relative sm:w-32 shrink-0">
-              <select
-                name="gender"
-                defaultValue=""
-                className="h-10 w-full rounded-xl border border-[#e8ddd0] bg-white px-3 text-sm text-[#3a2519] focus:outline-none focus:ring-2 focus:ring-[#c4826e]/30"
-              >
-                <option value="">選択しない</option>
-                <option value="male">男性</option>
-                <option value="female">女性</option>
-              </select>
-              <span className="absolute -top-2 left-3 bg-white px-1 text-[10px] text-[#b0a090]">性別</span>
-            </div>
           </div>
-          <div className="flex justify-end">
-            <Button
-              type="submit"
-              disabled={isPending}
-              className="bg-[#c4826e] hover:bg-[#a0634f] text-white rounded-xl"
+          <div>
+            <FieldLabel optional>性別</FieldLabel>
+            <select
+              name="gender"
+              defaultValue=""
+              className="w-full h-11 bg-white border border-[#3a2519]/20 px-4 font-body text-sm text-[#3a2519] focus:outline-none focus:border-[#c4826e] transition-colors"
             >
-              {isPending ? "追加中..." : "追加"}
-            </Button>
+              <option value="">選択しない</option>
+              <option value="male">男性</option>
+              <option value="female">女性</option>
+            </select>
           </div>
-        </form>
-      </CardContent>
-    </Card>
+        </div>
+        <div className="flex justify-end pt-2">
+          <PrimaryButton
+            type="submit"
+            disabled={isPending}
+            variant="dark"
+            size="md"
+          >
+            {isPending ? "追加中..." : "追加する"}
+          </PrimaryButton>
+        </div>
+      </form>
+    </div>
   );
 }

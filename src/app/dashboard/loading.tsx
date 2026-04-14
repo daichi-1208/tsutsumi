@@ -1,24 +1,20 @@
 export default function DashboardLoading() {
   return (
-    <div className="space-y-6 animate-pulse">
-      <div className="flex items-center justify-between">
-        <div className="h-8 w-40 bg-[#efe5da] rounded-lg" />
-        <div className="h-10 w-24 bg-[#efe5da] rounded-full" />
+    <div className="space-y-14 animate-pulse">
+      <div className="space-y-4">
+        <div className="h-3 w-24 bg-[#3a2519]/10" />
+        <div className="h-12 w-80 bg-[#3a2519]/10" />
+        <div className="h-4 w-64 bg-[#3a2519]/8" />
       </div>
-      <div className="bg-white rounded-2xl border border-[#efe5da] p-6 space-y-4">
-        <div className="h-5 w-32 bg-[#efe5da] rounded" />
-        <div className="space-y-3">
-          <div className="h-16 bg-[#fef8f3] rounded-xl" />
-          <div className="h-16 bg-[#fef8f3] rounded-xl" />
-        </div>
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-px bg-[#3a2519]/10">
+        {[...Array(4)].map((_, i) => (
+          <div key={i} className="bg-[#faf6f1] h-32" />
+        ))}
       </div>
-      <div className="bg-white rounded-2xl border border-[#efe5da] p-6 space-y-4">
-        <div className="h-5 w-28 bg-[#efe5da] rounded" />
-        <div className="space-y-2">
-          <div className="h-14 bg-[#fef8f3] rounded-xl" />
-          <div className="h-14 bg-[#fef8f3] rounded-xl" />
-          <div className="h-14 bg-[#fef8f3] rounded-xl" />
-        </div>
+      <div className="space-y-4">
+        {[...Array(5)].map((_, i) => (
+          <div key={i} className="h-16 bg-[#3a2519]/5 border-b border-[#3a2519]/10" />
+        ))}
       </div>
     </div>
   );

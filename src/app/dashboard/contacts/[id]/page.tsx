@@ -1,10 +1,9 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { getContact } from "@/lib/actions";
 import { EditContactForm } from "./edit-contact-form";
 import { DeleteContactButton } from "./delete-contact-button";
+import { PageHeader, PrimaryButton, SectionHeader } from "@/components/editorial";
 
 export default async function ContactDetailPage({
   params,
@@ -23,117 +22,145 @@ export default async function ContactDetailPage({
     .filter((r) => r.type === "GIVEN")
     .reduce((sum, r) => sum + (r.amount ?? 0), 0);
 
-  return (
-    <div className="space-y-6">
-      {/* ヘッダー */}
-      <div className="flex items-center justify-between">
-        <div>
-          <Link
-            href="/dashboard/contacts"
-            className="text-xs text-[#c4826e] hover:underline"
-          >
-            ← 連絡先一覧
-          </Link>
-          <h1 className="text-2xl font-bold text-[#3a2519] mt-1">
-            {contact.name}
-          </h1>
-          <p className="text-sm text-[#7a6050]">
-            {[
-              contact.relationship,
-              contact.gender === "male" ? "男性" : contact.gender === "female" ? "女性" : null,
-            ].filter(Boolean).join(" ・ ") || ""}
-          </p>
-          {contact.memo && (
-            <p className="text-xs text-[#b0a090] mt-1">メモ: {contact.memo}</p>
-          )}
-        </div>
-        <Link href="/dashboard/records/new">
-          <Button className="bg-[#c4826e] hover:bg-[#a0634f] text-white rounded-full px-6">
-            記録する
-          </Button>
-        </Link>
-      </div>
+  const genderLabel =
+    contact.gender === "male"
+      ? "男性"
+      : contact.gender === "female"
+        ? "女性"
+        : null;
+  const metaParts = [contact.relationship, genderLabel].filter(Boolean);
 
-      {/* 編集 */}
-      <EditContactForm contact={contact} />
+  return (
+    <div className="space-y-12">
+      {/* 戻る */}
+      <Link
+        href="/dashboard/contacts"
+        className="inline-flex items-center gap-2 font-latin text-[10px] uppercase tracking-[0.2em] text-[#c4826e]"
+      >
+        <svg
+          viewBox="0 0 16 16"
+          className="w-3 h-3"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2"
+        >
+          <path d="M13 8H3M7 4L3 8l4 4" />
+        </svg>
+        Back to contacts
+      </Link>
+
+      <PageHeader
+        chapter="Profile"
+        eyebrow={metaParts.join(" ・ ") || "Contact"}
+        title={contact.name}
+        description={contact.memo || undefined}
+        action={
+          <PrimaryButton href="/dashboard/records/new" variant="dark">
+            記録する
+          </PrimaryButton>
+        }
+      />
 
       {/* サマリー */}
-      <div className="grid grid-cols-2 gap-4">
-        <Card className="border-[#efe5da]">
-          <CardContent className="pt-5 text-center">
-            <p className="text-xs text-[#7a6050] mb-1">いただいた合計</p>
-            <p className="text-xl font-bold text-[#c4826e]">
+      <section>
+        <SectionHeader eyebrow="Summary" title="やりとりの、合計。" />
+        <div className="grid grid-cols-2 gap-px bg-[#3a2519]/10">
+          <div className="bg-[#faf6f1] p-5 md:p-7">
+            <div className="flex items-center gap-2 mb-3">
+              <span className="w-1 h-1 rounded-full bg-[#c4826e]" />
+              <span className="font-latin text-[9px] uppercase tracking-[0.25em] text-[#7a6050]">
+                Received
+              </span>
+            </div>
+            <p className="font-display text-xs text-[#7a6050] mb-1">いただいた</p>
+            <p className="font-latin text-2xl md:text-3xl font-[500] text-[#c4826e] tabular-nums">
               ¥{totalReceived.toLocaleString()}
             </p>
-          </CardContent>
-        </Card>
-        <Card className="border-[#efe5da]">
-          <CardContent className="pt-5 text-center">
-            <p className="text-xs text-[#7a6050] mb-1">お贈りした合計</p>
-            <p className="text-xl font-bold text-[#4caf50]">
+          </div>
+          <div className="bg-[#faf6f1] p-5 md:p-7">
+            <div className="flex items-center gap-2 mb-3">
+              <span className="w-1 h-1 rounded-full bg-[#5a9e6f]" />
+              <span className="font-latin text-[9px] uppercase tracking-[0.25em] text-[#7a6050]">
+                Given
+              </span>
+            </div>
+            <p className="font-display text-xs text-[#7a6050] mb-1">お贈りした</p>
+            <p className="font-latin text-2xl md:text-3xl font-[500] text-[#5a9e6f] tabular-nums">
               ¥{totalGiven.toLocaleString()}
             </p>
-          </CardContent>
-        </Card>
-      </div>
+          </div>
+        </div>
+      </section>
+
+      {/* 編集フォーム */}
+      <section>
+        <SectionHeader eyebrow="Edit" title="情報を、整える。" />
+        <EditContactForm contact={contact} />
+      </section>
 
       {/* やりとり履歴 */}
-      <Card className="border-[#efe5da]">
-        <CardHeader className="pb-3">
-          <CardTitle className="text-lg text-[#3a2519]">
-            やりとり履歴
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          {contact.records.length === 0 ? (
-            <p className="text-sm text-[#7a6050] text-center py-6">
-              まだ記録がありません
-            </p>
-          ) : (
-            <div className="space-y-2">
-              {contact.records.map((record) => (
-                <div
-                  key={record.id}
-                  className="flex items-center justify-between p-3 rounded-xl bg-[#fef8f3] border border-[#f5ede5]"
-                >
-                  <div className="flex items-center gap-3">
-                    <div
-                      className={`w-8 h-8 rounded-lg flex items-center justify-center text-xs font-bold ${
-                        record.type === "RECEIVED"
-                          ? "bg-[#fef0ea] text-[#c4826e]"
-                          : "bg-[#e8f5e9] text-[#4caf50]"
-                      }`}
-                    >
-                      {record.type === "RECEIVED" ? "受" : "贈"}
-                    </div>
-                    <div>
-                      <p className="font-medium text-sm text-[#3a2519]">
-                        {record.eventType}
-                        {record.itemName ? ` — ${record.itemName}` : ""}
-                      </p>
-                      <p className="text-xs text-[#7a6050]">
-                        {record.date.toLocaleDateString("ja-JP")}
-                        {record.returnStatus === "PENDING" &&
-                          " ・ お返し未済"}
-                        {record.returnStatus === "COMPLETED" &&
-                          " ・ お返し済"}
-                      </p>
-                    </div>
+      <section>
+        <SectionHeader
+          eyebrow={`History · ${contact.records.length}`}
+          title="やりとりの、歴史。"
+        />
+        {contact.records.length === 0 ? (
+          <p className="font-display text-sm italic text-[#7a6050] text-center py-10">
+            まだ、記録がありません。
+          </p>
+        ) : (
+          <div className="border-t border-[#3a2519]/20">
+            {contact.records.map((record, i) => (
+              <div
+                key={record.id}
+                className="grid grid-cols-12 gap-3 py-5 border-b border-[#3a2519]/12"
+              >
+                <div className="col-span-1 font-latin text-[11px] text-[#7a6050] pt-1 tabular-nums">
+                  {String(i + 1).padStart(2, "0")}
+                </div>
+                <div className="col-span-7 flex items-start gap-3">
+                  <span
+                    className={`font-display text-xs font-medium px-2 py-0.5 mt-0.5 shrink-0 ${
+                      record.type === "RECEIVED"
+                        ? "bg-[#c4826e]/10 text-[#c4826e]"
+                        : "bg-[#5a9e6f]/10 text-[#5a9e6f]"
+                    }`}
+                  >
+                    {record.type === "RECEIVED" ? "受" : "贈"}
+                  </span>
+                  <div>
+                    <p className="font-display text-sm md:text-base font-[500] text-[#3a2519]">
+                      {record.eventType}
+                      {record.itemName && (
+                        <span className="font-body text-xs text-[#7a6050] ml-2">
+                          {record.itemName}
+                        </span>
+                      )}
+                    </p>
+                    <p className="font-latin text-[10px] italic text-[#7a6050] mt-0.5">
+                      {record.date.toLocaleDateString("ja-JP")}
+                      {record.returnStatus === "PENDING" && " ・ pending"}
+                      {record.returnStatus === "COMPLETED" && " ・ returned"}
+                    </p>
                   </div>
-                  <span className="font-medium text-sm text-[#3a2519]">
-                    {record.amount != null ? `¥${record.amount.toLocaleString()}` : "金額不明"}
+                </div>
+                <div className="col-span-4 flex items-start justify-end">
+                  <span className="font-latin text-sm font-[500] text-[#3a2519] tabular-nums">
+                    {record.amount != null
+                      ? `¥${record.amount.toLocaleString()}`
+                      : "—"}
                   </span>
                 </div>
-              ))}
-            </div>
-          )}
-        </CardContent>
-      </Card>
+              </div>
+            ))}
+          </div>
+        )}
+      </section>
 
       {/* 削除 */}
-      <div className="flex justify-end">
+      <section className="pt-6 border-t border-[#3a2519]/15 flex justify-end">
         <DeleteContactButton contactId={contact.id} />
-      </div>
+      </section>
     </div>
   );
 }

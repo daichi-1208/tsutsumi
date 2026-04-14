@@ -2,11 +2,6 @@
 
 import { useTransition, useState } from "react";
 import { useRouter } from "next/navigation";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
-import { Card, CardContent } from "@/components/ui/card";
 import {
   Dialog,
   DialogContent,
@@ -15,6 +10,7 @@ import {
 } from "@/components/ui/dialog";
 import { createRecord, createContact } from "@/lib/actions";
 import { EVENT_TYPE_LIST, EVENT_TYPES } from "@/lib/return-rules";
+import { FieldLabel, PrimaryButton, GhostLink } from "@/components/editorial";
 
 type Contact = {
   id: string;
@@ -22,6 +18,18 @@ type Contact = {
   relationship: string | null;
   _count: { records: number };
 };
+
+const GIFT_TAGS = [
+  "カタログギフト",
+  "商品券",
+  "タオルセット",
+  "食品・スイーツ",
+  "お酒",
+  "花束",
+  "食器",
+  "日用品",
+  "ベビー用品",
+];
 
 export function RecordForm({
   contacts,
@@ -65,272 +73,302 @@ export function RecordForm({
     });
   }
 
+  const segmentBase =
+    "flex-1 py-3 text-sm font-medium tracking-wide transition-all duration-300 border";
+
   return (
     <>
-      <Card className="border-[#efe5da]">
-        <CardContent className="pt-6">
-          <form action={handleSubmit} className="space-y-5">
-            {/* もらった / あげた */}
-            <div className="flex gap-2">
-              <button
-                type="button"
-                onClick={() => setType("received")}
-                className={`flex-1 py-2.5 rounded-xl text-sm font-medium transition-colors ${
-                  type === "received"
-                    ? "bg-[#c4826e] text-white"
-                    : "bg-[#f5ede5] text-[#7a6050]"
-                }`}
-              >
-                もらった
-              </button>
-              <button
-                type="button"
-                onClick={() => setType("given")}
-                className={`flex-1 py-2.5 rounded-xl text-sm font-medium transition-colors ${
-                  type === "given"
-                    ? "bg-[#4caf50] text-white"
-                    : "bg-[#f5ede5] text-[#7a6050]"
-                }`}
-              >
-                あげた
-              </button>
-            </div>
+      <form action={handleSubmit} className="space-y-10 max-w-2xl">
+        {/* 種類(もらった/あげた) */}
+        <div>
+          <FieldLabel>種類</FieldLabel>
+          <div className="flex gap-0">
+            <button
+              type="button"
+              onClick={() => setType("received")}
+              className={`${segmentBase} ${
+                type === "received"
+                  ? "bg-[#3a2519] text-[#faf6f1] border-[#3a2519]"
+                  : "bg-transparent text-[#7a6050] border-[#3a2519]/20 hover:border-[#3a2519]/50"
+              }`}
+            >
+              いただいた
+            </button>
+            <button
+              type="button"
+              onClick={() => setType("given")}
+              className={`${segmentBase} -ml-px ${
+                type === "given"
+                  ? "bg-[#3a2519] text-[#faf6f1] border-[#3a2519]"
+                  : "bg-transparent text-[#7a6050] border-[#3a2519]/20 hover:border-[#3a2519]/50"
+              }`}
+            >
+              お贈りした
+            </button>
+          </div>
+        </div>
 
-            {/* 相手 */}
-            <div className="space-y-2">
-              <Label className="text-[#3a2519]">相手</Label>
-              <select
-                name="contactId"
-                value={contactId}
-                onChange={(e) => setContactId(e.target.value)}
-                required
-                className="w-full h-10 rounded-xl border border-[#e8ddd0] bg-white px-3 text-sm text-[#3a2519] focus:outline-none focus:ring-2 focus:ring-[#c4826e]/30"
-              >
-                <option value="">選択してください</option>
-                {contacts.map((c) => (
-                  <option key={c.id} value={c.id}>
-                    {c.name}
-                    {c.relationship ? ` (${c.relationship})` : ""}
-                  </option>
-                ))}
-              </select>
-              <button
-                type="button"
-                onClick={() => setDialogOpen(true)}
-                className="text-xs text-[#c4826e] hover:underline"
-              >
-                + 新しい相手を追加
-              </button>
-              <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-                <DialogContent className="bg-[#faf6f1] border-[#efe5da]">
-                  <DialogHeader>
-                    <DialogTitle className="text-[#3a2519]">
-                      新しい相手を追加
-                    </DialogTitle>
-                  </DialogHeader>
-                  <form action={handleNewContact} className="space-y-4">
-                    <div className="space-y-2">
-                      <Label className="text-[#3a2519]">名前</Label>
-                      <Input
-                        name="name"
-                        placeholder="田中太郎"
-                        required
-                        className="border-[#e8ddd0] rounded-xl"
-                      />
-                    </div>
-                    <div className="space-y-2">
-                      <Label className="text-[#3a2519]">関係</Label>
-                      <Input
-                        name="relationship"
-                        placeholder="親戚・職場・友人など"
-                        className="border-[#e8ddd0] rounded-xl"
-                      />
-                    </div>
-                    <div className="space-y-2">
-                      <Label className="text-[#3a2519]">性別</Label>
-                      <select
-                        name="gender"
-                        defaultValue=""
-                        className="w-full h-10 rounded-xl border border-[#e8ddd0] bg-white px-3 text-sm text-[#3a2519] focus:outline-none focus:ring-2 focus:ring-[#c4826e]/30"
-                      >
-                        <option value="">選択しない</option>
-                        <option value="male">男性</option>
-                        <option value="female">女性</option>
-                      </select>
-                    </div>
-                    <div className="space-y-2">
-                      <Label className="text-[#3a2519]">メモ</Label>
-                      <Input
-                        name="memo"
-                        placeholder="任意"
-                        className="border-[#e8ddd0] rounded-xl"
-                      />
-                    </div>
-                    <Button
-                      type="submit"
-                      disabled={isPending}
-                      className="w-full bg-[#c4826e] hover:bg-[#a0634f] text-white rounded-xl"
-                    >
-                      {isPending ? "追加中..." : "追加する"}
-                    </Button>
-                  </form>
-                </DialogContent>
-              </Dialog>
-            </div>
+        {/* 相手 */}
+        <div>
+          <div className="flex items-center justify-between mb-2">
+            <FieldLabel>相手</FieldLabel>
+            <button
+              type="button"
+              onClick={() => setDialogOpen(true)}
+              className="font-latin text-[10px] italic uppercase tracking-[0.2em] text-[#c4826e] hover:text-[#a0634f] transition-colors"
+            >
+              + Add new
+            </button>
+          </div>
+          <select
+            name="contactId"
+            value={contactId}
+            onChange={(e) => setContactId(e.target.value)}
+            required
+            className="w-full h-12 bg-white border border-[#3a2519]/20 px-4 font-body text-sm text-[#3a2519] focus:outline-none focus:border-[#c4826e] transition-colors"
+          >
+            <option value="">選択してください</option>
+            {contacts.map((c) => (
+              <option key={c.id} value={c.id}>
+                {c.name}
+                {c.relationship ? ` (${c.relationship})` : ""}
+              </option>
+            ))}
+          </select>
+        </div>
 
-            {/* イベント種別 */}
-            <div className="space-y-2">
-              <Label className="text-[#3a2519]">イベント</Label>
-              <select
-                name="eventType"
-                value={eventType}
-                onChange={(e) => { setEventType(e.target.value); setForceReturn(false); }}
-                required
-                className="w-full h-10 rounded-xl border border-[#e8ddd0] bg-white px-3 text-sm text-[#3a2519] focus:outline-none focus:ring-2 focus:ring-[#c4826e]/30"
-              >
-                <option value="">選択してください</option>
-                {EVENT_TYPE_LIST.map((et) => (
-                  <option key={et} value={et}>
-                    {et}
-                  </option>
-                ))}
-              </select>
-              {rule && type === "received" && (
-                <div className="text-xs bg-[#fef8f3] px-3 py-2 rounded-lg space-y-2">
-                  <p className="text-[#8b5e3c]">
-                    {rule.returnRate !== null
-                      ? `お返し目安: ${Math.round(rule.returnRate * 100)}%${rule.returnRateMax ? `〜${Math.round(rule.returnRateMax * 100)}%` : ""} / ${rule.dueDays ? `${rule.dueDays}日以内` : "時期任意"}`
-                      : "お返し不要"}
-                    {rule.note ? ` — ${rule.note}` : ""}
-                  </p>
-                  {isReturnNotNeeded && (
-                    <label className="flex items-center gap-2 cursor-pointer">
-                      <input
-                        type="checkbox"
-                        checked={forceReturn}
-                        onChange={(e) => setForceReturn(e.target.checked)}
-                        className="w-3.5 h-3.5 rounded border-[#d4c0b0] accent-[#c4826e]"
-                      />
-                      <span className="text-[#7a6050]">それでもお返しを管理する</span>
-                    </label>
-                  )}
-                </div>
-              )}
-            </div>
-
-            {/* 金額 */}
-            <div className="space-y-2">
-              <Label className="text-[#3a2519]">
-                金額 <span className="text-xs text-[#b0a090]">わからなければ空欄でOK</span>
-              </Label>
-              <div className="relative">
-                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-sm text-[#7a6050]">
-                  ¥
-                </span>
-                <Input
-                  name="amount"
-                  type="number"
-                  min="0"
-                  placeholder="10000"
-                  className="pl-7 border-[#e8ddd0] rounded-xl"
-                />
-              </div>
-              {itemCategory === "goods" && (
-                <p className="text-xs text-[#b0a090]">
-                  推定金額を入れるとお返し目安が計算されます
+        {/* イベント */}
+        <div>
+          <FieldLabel>イベント</FieldLabel>
+          <select
+            name="eventType"
+            value={eventType}
+            onChange={(e) => {
+              setEventType(e.target.value);
+              setForceReturn(false);
+            }}
+            required
+            className="w-full h-12 bg-white border border-[#3a2519]/20 px-4 font-body text-sm text-[#3a2519] focus:outline-none focus:border-[#c4826e] transition-colors"
+          >
+            <option value="">選択してください</option>
+            {EVENT_TYPE_LIST.map((et) => (
+              <option key={et} value={et}>
+                {et}
+              </option>
+            ))}
+          </select>
+          {rule && type === "received" && (
+            <div className="mt-3 border-l-2 border-[#c4826e] pl-4 py-2">
+              <p className="font-display text-xs text-[#c4826e] italic leading-relaxed">
+                {rule.returnRate !== null
+                  ? `お返し目安: ${Math.round(rule.returnRate * 100)}%${
+                      rule.returnRateMax
+                        ? `〜${Math.round(rule.returnRateMax * 100)}%`
+                        : ""
+                    } / ${
+                      rule.dueDays ? `${rule.dueDays}日以内` : "時期任意"
+                    }`
+                  : "お返しは不要です"}
+              </p>
+              {rule.note && (
+                <p className="font-body text-[10px] text-[#7a6050] mt-1">
+                  — {rule.note}
                 </p>
               )}
-            </div>
-
-            {/* 日付 */}
-            <div className="space-y-2">
-              <Label className="text-[#3a2519]">日付</Label>
-              <Input
-                name="date"
-                type="date"
-                required
-                defaultValue={new Date().toISOString().split("T")[0]}
-                className="border-[#e8ddd0] rounded-xl"
-              />
-            </div>
-
-            {/* 現金 or ギフト */}
-            <div className="space-y-2">
-              <Label className="text-[#3a2519]">種類</Label>
-              <div className="flex gap-2">
-                <button
-                  type="button"
-                  onClick={() => setItemCategory("cash")}
-                  className={`flex-1 py-2.5 rounded-xl text-sm font-medium transition-colors ${
-                    itemCategory === "cash"
-                      ? "bg-[#3a2519] text-white"
-                      : "bg-[#f5ede5] text-[#7a6050]"
-                  }`}
-                >
-                  現金
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setItemCategory("goods")}
-                  className={`flex-1 py-2.5 rounded-xl text-sm font-medium transition-colors ${
-                    itemCategory === "goods"
-                      ? "bg-[#3a2519] text-white"
-                      : "bg-[#f5ede5] text-[#7a6050]"
-                  }`}
-                >
-                  ギフト
-                </button>
-              </div>
-              {itemCategory === "goods" && (
-                <div className="space-y-2">
-                  <div className="flex flex-wrap gap-1.5">
-                    {["カタログギフト", "商品券", "タオルセット", "食品・スイーツ", "お酒", "花束", "食器", "日用品", "ベビー用品"].map((item) => (
-                      <button
-                        key={item}
-                        type="button"
-                        onClick={() => {
-                          const input = document.querySelector<HTMLInputElement>('input[name="itemName"]');
-                          if (input) input.value = item;
-                        }}
-                        className="px-2.5 py-1 text-xs rounded-full border border-[#e8ddd0] text-[#7a6050] hover:bg-[#fef8f3] hover:border-[#c4826e] hover:text-[#c4826e] transition-colors"
-                      >
-                        {item}
-                      </button>
-                    ))}
-                  </div>
-                  <Input
-                    name="itemName"
-                    placeholder="選択するか自由に入力"
-                    className="border-[#e8ddd0] rounded-xl"
+              {isReturnNotNeeded && (
+                <label className="flex items-center gap-2 mt-3 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={forceReturn}
+                    onChange={(e) => setForceReturn(e.target.checked)}
+                    className="w-3.5 h-3.5 border-[#3a2519]/30 accent-[#c4826e]"
                   />
-                </div>
+                  <span className="font-body text-xs text-[#7a6050]">
+                    それでもお返しを管理する
+                  </span>
+                </label>
               )}
             </div>
+          )}
+        </div>
 
-            {/* メモ（任意） */}
-            <div className="space-y-2">
-              <Label className="text-[#3a2519]">
-                メモ <span className="text-xs text-[#b0a090]">任意</span>
-              </Label>
-              <Textarea
-                name="memo"
-                placeholder="備考があれば"
-                rows={2}
-                className="border-[#e8ddd0] rounded-xl resize-none"
+        {/* 現金/ギフト */}
+        <div>
+          <FieldLabel>種類</FieldLabel>
+          <div className="flex gap-0">
+            <button
+              type="button"
+              onClick={() => setItemCategory("cash")}
+              className={`${segmentBase} ${
+                itemCategory === "cash"
+                  ? "bg-[#3a2519] text-[#faf6f1] border-[#3a2519]"
+                  : "bg-transparent text-[#7a6050] border-[#3a2519]/20 hover:border-[#3a2519]/50"
+              }`}
+            >
+              現金
+            </button>
+            <button
+              type="button"
+              onClick={() => setItemCategory("goods")}
+              className={`${segmentBase} -ml-px ${
+                itemCategory === "goods"
+                  ? "bg-[#3a2519] text-[#faf6f1] border-[#3a2519]"
+                  : "bg-transparent text-[#7a6050] border-[#3a2519]/20 hover:border-[#3a2519]/50"
+              }`}
+            >
+              ギフト
+            </button>
+          </div>
+          {itemCategory === "goods" && (
+            <div className="mt-4 space-y-3">
+              <div className="flex flex-wrap gap-1.5">
+                {GIFT_TAGS.map((tag) => (
+                  <button
+                    key={tag}
+                    type="button"
+                    onClick={() => {
+                      const input =
+                        document.querySelector<HTMLInputElement>(
+                          'input[name="itemName"]'
+                        );
+                      if (input) input.value = tag;
+                    }}
+                    className="px-3 py-1 font-body text-xs text-[#7a6050] border border-[#3a2519]/15 hover:border-[#c4826e] hover:text-[#c4826e] transition-colors"
+                  >
+                    {tag}
+                  </button>
+                ))}
+              </div>
+              <input
+                name="itemName"
+                placeholder="選択するか、自由に入力"
+                className="w-full h-12 bg-white border border-[#3a2519]/20 px-4 font-body text-sm text-[#3a2519] focus:outline-none focus:border-[#c4826e] transition-colors"
               />
             </div>
+          )}
+        </div>
 
-            {/* 送信 */}
-            <Button
-              type="submit"
-              disabled={isPending}
-              className="w-full bg-[#c4826e] hover:bg-[#a0634f] text-white rounded-xl h-12 text-base"
-            >
-              {isPending ? "記録中..." : "記録する"}
-            </Button>
+        {/* 金額 */}
+        <div>
+          <FieldLabel>金額</FieldLabel>
+          <div className="relative">
+            <span className="absolute left-4 top-1/2 -translate-y-1/2 font-latin text-base text-[#7a6050]">
+              ¥
+            </span>
+            <input
+              name="amount"
+              type="number"
+              min="0"
+              placeholder="10000"
+              className="w-full h-12 bg-white border border-[#3a2519]/20 pl-9 pr-4 font-latin text-base text-[#3a2519] tabular-nums focus:outline-none focus:border-[#c4826e] transition-colors"
+            />
+          </div>
+          {itemCategory === "goods" && (
+            <p className="font-body text-[10px] text-[#b0a090] mt-2">
+              推定金額を入れると、お返し目安が計算されます
+            </p>
+          )}
+        </div>
+
+        {/* 日付 */}
+        <div>
+          <FieldLabel>日付</FieldLabel>
+          <input
+            name="date"
+            type="date"
+            required
+            defaultValue={new Date().toISOString().split("T")[0]}
+            className="w-full h-12 bg-white border border-[#3a2519]/20 px-4 font-body text-sm text-[#3a2519] focus:outline-none focus:border-[#c4826e] transition-colors"
+          />
+        </div>
+
+        {/* メモ */}
+        <div>
+          <FieldLabel optional>メモ</FieldLabel>
+          <textarea
+            name="memo"
+            rows={2}
+            placeholder="備考があれば"
+            className="w-full bg-white border border-[#3a2519]/20 px-4 py-3 font-body text-sm text-[#3a2519] focus:outline-none focus:border-[#c4826e] transition-colors resize-none"
+          />
+        </div>
+
+        {/* 送信 */}
+        <div className="pt-4 flex items-center gap-6 flex-wrap">
+          <PrimaryButton
+            type="submit"
+            disabled={isPending}
+            variant="dark"
+            size="lg"
+          >
+            {isPending ? "書き残しています..." : "記録する"}
+          </PrimaryButton>
+          <GhostLink href={`/dashboard${groupId ? `?group=${groupId}` : ""}`}>
+            キャンセル
+          </GhostLink>
+        </div>
+      </form>
+
+      {/* 新規連絡先ダイアログ */}
+      <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
+        <DialogContent className="bg-[#faf6f1] border border-[#3a2519]/20 max-w-md">
+          <DialogHeader>
+            <DialogTitle>
+              <span className="font-display text-xl font-[500] text-[#3a2519]">
+                新しい相手を追加
+              </span>
+            </DialogTitle>
+          </DialogHeader>
+          <form action={handleNewContact} className="space-y-5 mt-2">
+            <div>
+              <FieldLabel>名前</FieldLabel>
+              <input
+                name="name"
+                placeholder="田中太郎"
+                required
+                className="w-full h-11 bg-white border border-[#3a2519]/20 px-4 font-body text-sm text-[#3a2519] focus:outline-none focus:border-[#c4826e] transition-colors"
+              />
+            </div>
+            <div>
+              <FieldLabel optional>関係</FieldLabel>
+              <input
+                name="relationship"
+                placeholder="親戚・職場・友人など"
+                className="w-full h-11 bg-white border border-[#3a2519]/20 px-4 font-body text-sm text-[#3a2519] focus:outline-none focus:border-[#c4826e] transition-colors"
+              />
+            </div>
+            <div>
+              <FieldLabel optional>性別</FieldLabel>
+              <select
+                name="gender"
+                defaultValue=""
+                className="w-full h-11 bg-white border border-[#3a2519]/20 px-4 font-body text-sm text-[#3a2519] focus:outline-none focus:border-[#c4826e] transition-colors"
+              >
+                <option value="">選択しない</option>
+                <option value="male">男性</option>
+                <option value="female">女性</option>
+              </select>
+            </div>
+            <div>
+              <FieldLabel optional>メモ</FieldLabel>
+              <input
+                name="memo"
+                className="w-full h-11 bg-white border border-[#3a2519]/20 px-4 font-body text-sm text-[#3a2519] focus:outline-none focus:border-[#c4826e] transition-colors"
+              />
+            </div>
+            <div className="pt-2">
+              <PrimaryButton
+                type="submit"
+                disabled={isPending}
+                variant="dark"
+                size="md"
+              >
+                {isPending ? "追加中..." : "追加する"}
+              </PrimaryButton>
+            </div>
           </form>
-        </CardContent>
-      </Card>
+        </DialogContent>
+      </Dialog>
     </>
   );
 }

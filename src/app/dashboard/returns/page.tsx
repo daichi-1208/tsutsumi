@@ -1,8 +1,7 @@
 import Link from "next/link";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
 import { getPendingReturns } from "@/lib/actions";
 import { ReturnStatusToggle } from "../return-status-toggle";
+import { PageHeader, EditorialEmpty } from "@/components/editorial";
 
 export default async function ReturnsPage({
   searchParams,
@@ -13,100 +12,106 @@ export default async function ReturnsPage({
   const pendingReturns = await getPendingReturns(groupId);
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <Link
-            href="/dashboard"
-            className="text-xs text-[#c4826e] hover:underline"
-          >
-            ← ダッシュボード
-          </Link>
-          <div className="flex items-center gap-3 mt-1">
-            <h1 className="text-2xl font-bold text-[#3a2519]">お返し未済</h1>
-            {pendingReturns.length > 0 && (
-              <Badge className="bg-[#c4826e] text-white">
-                {pendingReturns.length}件
-              </Badge>
-            )}
-          </div>
-        </div>
-      </div>
+    <div>
+      <Link
+        href="/dashboard"
+        className="inline-flex items-center gap-2 font-latin text-[10px] uppercase tracking-[0.2em] text-[#c4826e] mb-6"
+      >
+        <svg
+          viewBox="0 0 16 16"
+          className="w-3 h-3"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2"
+        >
+          <path d="M13 8H3M7 4L3 8l4 4" />
+        </svg>
+        Back to dashboard
+      </Link>
+
+      <PageHeader
+        chapter={`No. 返 · ${pendingReturns.length}`}
+        eyebrow="Pending returns"
+        title="お返し、"
+        accent="未済の方々。"
+        description="期限が近づいたものから順に並んでいます。"
+      />
 
       {pendingReturns.length === 0 ? (
-        <Card className="border-[#efe5da]">
-          <CardContent className="py-12 text-center">
-            <p className="text-[#7a6050]">
-              お返しが必要な記録はありません
-            </p>
-          </CardContent>
-        </Card>
+        <EditorialEmpty
+          title="未済は、ございません。"
+          description="すべてのお付き合いが、整っています。"
+        />
       ) : (
-        <Card className="border-[#efe5da]">
-          <CardContent className="pt-4">
-            <div className="space-y-3">
-              {pendingReturns.map((record) => {
-                const daysLeft = record.returnDueDate
-                  ? Math.ceil(
-                      (record.returnDueDate.getTime() - Date.now()) /
-                        (1000 * 60 * 60 * 24)
-                    )
-                  : null;
+        <div className="border-t border-[#3a2519]/20">
+          {pendingReturns.map((record, i) => {
+            const daysLeft = record.returnDueDate
+              ? Math.ceil(
+                  (record.returnDueDate.getTime() - Date.now()) /
+                    (1000 * 60 * 60 * 24)
+                )
+              : null;
 
-                return (
-                  <div
-                    key={record.id}
-                    className="p-3 bg-[#fef8f3] rounded-xl border border-[#f5ede5]"
-                  >
-                    <div className="flex items-start justify-between gap-2">
-                      <div className="min-w-0">
-                        <p className="font-medium text-[#3a2519] text-sm">
-                          {record.contact.name}
-                        </p>
-                        <p className="text-xs text-[#7a6050] mt-0.5">
-                          {record.eventType}
-                          {record.amount != null
-                            ? ` ・ ¥${record.amount.toLocaleString()}`
-                            : ""}
-                        </p>
-                      </div>
-                      {daysLeft !== null && (
-                        <span
-                          className={`text-xs font-medium px-2 py-1 rounded-full shrink-0 ${
-                            daysLeft < 0
-                              ? "bg-red-100 text-red-700"
-                              : daysLeft <= 7
-                                ? "bg-orange-100 text-orange-700"
-                                : "bg-[#fef0ea] text-[#c4826e]"
-                          }`}
-                        >
-                          {daysLeft < 0
-                            ? `${Math.abs(daysLeft)}日超過`
-                            : `あと${daysLeft}日`}
-                        </span>
-                      )}
-                    </div>
-                    {record.returnAmount && (
-                      <p className="text-xs text-[#c4826e] mt-1.5">
-                        お返し目安: ¥{record.returnAmount.toLocaleString()}
-                      </p>
-                    )}
-                    {(record.itemName || record.memo) && (
-                      <p className="text-xs text-[#b0a090] mt-1">
-                        {record.itemName && <>品名: {record.itemName}</>}
-                        {record.itemName && record.memo && " ／ "}
-                        {record.memo && <>メモ: {record.memo}</>}
-                      </p>
-                    )}
-                    <div className="mt-2 flex justify-end">
-                      <ReturnStatusToggle recordId={record.id} />
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-          </CardContent>
-        </Card>
+            const daysLabel =
+              daysLeft === null
+                ? null
+                : daysLeft < 0
+                  ? `${Math.abs(daysLeft)}日超過`
+                  : `あと${daysLeft}日`;
+            const daysColor =
+              daysLeft === null
+                ? "text-[#7a6050]"
+                : daysLeft < 0
+                  ? "text-red-600"
+                  : daysLeft <= 7
+                    ? "text-orange-600"
+                    : "text-[#c4826e]";
+
+            return (
+              <div
+                key={record.id}
+                className="grid grid-cols-12 gap-3 md:gap-4 py-5 md:py-7 border-b border-[#3a2519]/12"
+              >
+                <div className="col-span-1 font-latin text-[11px] text-[#7a6050] pt-1 tabular-nums">
+                  {String(i + 1).padStart(2, "0")}
+                </div>
+                <div className="col-span-7 md:col-span-8">
+                  <p className="font-display text-lg md:text-xl font-[500] text-[#3a2519]">
+                    {record.contact.name}
+                  </p>
+                  <p className="font-body text-xs text-[#7a6050] mt-1">
+                    {record.eventType}
+                    {record.amount != null
+                      ? ` ・ ¥${record.amount.toLocaleString()}`
+                      : ""}
+                  </p>
+                  {record.returnAmount && (
+                    <p className="font-latin text-xs italic text-[#c4826e] mt-1">
+                      お返し目安 ¥{record.returnAmount.toLocaleString()}
+                    </p>
+                  )}
+                  {(record.itemName || record.memo) && (
+                    <p className="font-body text-[10px] text-[#b0a090] mt-1">
+                      {record.itemName && <>品名: {record.itemName}</>}
+                      {record.itemName && record.memo && " ／ "}
+                      {record.memo && <>メモ: {record.memo}</>}
+                    </p>
+                  )}
+                </div>
+                <div className="col-span-4 md:col-span-3 flex flex-col items-end justify-center gap-2">
+                  {daysLabel && (
+                    <span
+                      className={`font-latin text-xs italic tabular-nums ${daysColor}`}
+                    >
+                      {daysLabel}
+                    </span>
+                  )}
+                  <ReturnStatusToggle recordId={record.id} />
+                </div>
+              </div>
+            );
+          })}
+        </div>
       )}
     </div>
   );
