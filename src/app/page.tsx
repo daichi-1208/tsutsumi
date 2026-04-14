@@ -128,20 +128,23 @@ export default function LandingPage() {
             <div className="text-center md:text-left order-2 md:order-1">
               <div className="inline-flex items-center gap-2 bg-white/70 backdrop-blur-sm border border-[#e8ddd0] rounded-full px-4 py-1.5 mb-8 text-sm text-[#8b5e3c] font-medium">
                 <span className="w-1.5 h-1.5 rounded-full bg-[#c4826e]" />
-                完全無料ではじめられます
+                結婚・出産直後の方へ
               </div>
 
               <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold tracking-tight leading-[1.1] mb-8 text-[#3a2519]">
-                <span className="inline-block">贈り物を、</span>
+                <span className="inline-block">お返しで、</span>
                 <br />
                 <span className="inline-block bg-gradient-to-r from-[#c4826e] to-[#d4a088] bg-clip-text text-transparent">
-                  大切に包む。
+                  悩まない。
                 </span>
               </h1>
 
               <p className="text-lg text-[#7a6050] mb-10 max-w-md mx-auto md:mx-0 leading-relaxed">
-                「誰に何をもらった？」「お返しいつ？いくら？」
-                もう迷わない。現金もギフトも、記録するだけでお返しの時期と金額を教えてくれます。
+                「誰にいくらもらったっけ？」「もうお返しした？」
+                <br />
+                結婚式直後、出産直後の忙しい時期。
+                <br />
+                <span className="font-bold text-[#3a2519]">つつみが全部覚えておきます。</span>
               </p>
 
               <div className="flex flex-col sm:flex-row gap-3 justify-center md:justify-start">
@@ -208,13 +211,17 @@ export default function LandingPage() {
           <p className="text-sm font-medium text-[#c4826e] tracking-widest mb-3">
             PAIN
           </p>
-          <h2 className="text-2xl md:text-3xl font-bold mb-10 text-[#3a2519]">
-            こんな経験、ありませんか？
+          <h2 className="text-2xl md:text-3xl font-bold mb-4 text-[#3a2519]">
+            結婚・出産の後、こうなっていませんか？
           </h2>
+          <p className="text-[#7a6050] mb-10 max-w-lg mx-auto">
+            両家から大量に届くお祝い。忙しい時期にお返しまで考えられない。
+            気づいたら期限を過ぎて、パートナーと責任のなすり合い。
+          </p>
           <div className="grid md:grid-cols-3 gap-5">
             {[
               {
-                text: "結婚祝いのお返し、もう1ヶ月過ぎてた…",
+                text: "「結婚祝いのお返し、もう1ヶ月過ぎてた…」気まずさMAX。",
                 sub: "期限を忘れる",
                 icon: (
                   <svg viewBox="0 0 24 24" className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="1.5">
@@ -224,7 +231,7 @@ export default function LandingPage() {
                 ),
               },
               {
-                text: "「あの人にいくらもらったっけ？」とパートナーに聞くたび気まずい",
+                text: "「え、田中さんっていくらもらったっけ？」「私の叔母だよ、3万円」毎回この会話。",
                 sub: "記録がバラバラ",
                 icon: (
                   <svg viewBox="0 0 24 24" className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="1.5">
@@ -235,7 +242,7 @@ export default function LandingPage() {
                 ),
               },
               {
-                text: "半返し？三返し？いくら返せばいいの…？",
+                text: "半返し？三返し？目上の方は1/3？調べるたびに違う答えが出てくる。",
                 sub: "ルールがわからない",
                 icon: (
                   <svg viewBox="0 0 24 24" className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="1.5">
@@ -277,13 +284,15 @@ export default function LandingPage() {
                 SOLUTION
               </p>
               <h2 className="text-3xl md:text-4xl font-bold mb-5">
-                記録するだけで、
+                もう迷わない。
                 <br />
-                全部解決。
+                もう喧嘩しない。
               </h2>
               <p className="text-[#c4b0a0] max-w-lg leading-relaxed">
-                現金もギフトも、記録すれば日本の慣習に沿ったお返し金額と時期を自動で計算。
-                パーソナルで自分用に。グループを作ればパートナーと共有も。
+                記録は1人30秒。パートナーと共有すれば、2人で同じ画面を見ながら管理できる。
+                お返し期限が近づけばメールでお知らせ。
+                <br />
+                <span className="font-bold text-white">あの混乱の日々、もう来ません。</span>
               </p>
             </div>
             <div className="relative">
@@ -540,12 +549,16 @@ export default function LandingPage() {
           <div className="bg-white/70 backdrop-blur-xl rounded-3xl p-8 md:p-12 shadow-2xl shadow-[#3a2519]/8 border border-white/80 text-center">
             <Image src="/logo.webp" alt="つつみ" width={80} height={80} className="w-20 h-20 mx-auto mb-6 rounded-3xl drop-shadow-lg" />
             <h2 className="text-3xl md:text-4xl font-bold mb-4 text-[#3a2519] leading-tight">
-              大切な人とのお付き合いを、
+              今すぐ記録すれば、
               <br />
-              つつみが包みます。
+              1ヶ月後に救われる。
             </h2>
             <p className="text-[#7a6050] mb-8 text-base md:text-lg max-w-md mx-auto">
-              完全無料。登録は30秒。パートナーとの共有もかんたん。
+              結婚祝いのお返しは挙式後1ヶ月以内。
+              <br />
+              期限は待ってくれません。
+              <br />
+              <span className="font-bold text-[#c4826e]">完全無料・30秒で登録</span>
             </p>
             <Link href="/sign-up">
               <Button size="lg" className="bg-[#c4826e] hover:bg-[#a0634f] text-white shadow-lg shadow-[#c4826e]/25 rounded-full text-base px-12 h-14">

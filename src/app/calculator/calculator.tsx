@@ -105,23 +105,36 @@ export function Calculator() {
           <div className="absolute -right-4 -top-4 w-24 h-24 rounded-full bg-white/10" />
           <div className="absolute -right-2 -bottom-6 w-16 h-16 rounded-full bg-white/5" />
           <div className="relative">
-            <p className="text-lg font-bold mb-1">この記録、忘れないようにしませんか？</p>
-            <p className="text-sm opacity-80 mb-4">
-              つつみに保存すれば、お返し期限が近づくとメールでお知らせ。
+            {/* 警告アイコン */}
+            <div className="flex items-center gap-2 mb-3">
+              <svg viewBox="0 0 20 20" className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2">
+                <path d="M10 2L2 16h16L10 2z" />
+                <path d="M10 8v4M10 14h.01" />
+              </svg>
+              <p className="text-xs font-bold uppercase tracking-wider opacity-90">重要</p>
+            </div>
+            <p className="text-xl font-bold mb-2">この計算結果、どこかにメモしましたか？</p>
+            <p className="text-sm opacity-90 mb-4 leading-relaxed">
+              ブラウザを閉じると消えます。
+              <br />
+              つつみに保存すれば、お返し期限が近づくと<span className="font-bold">メールでお知らせ</span>。
               <br />
               パートナーとの共有もできます。
             </p>
             <Link
               href="/sign-up"
-              className="inline-flex items-center gap-2 bg-white text-[#c4826e] rounded-full px-6 py-3 text-sm font-bold hover:bg-[#fef8f3] transition-colors"
+              className="inline-flex items-center gap-2 bg-white text-[#c4826e] rounded-full px-8 py-3.5 text-base font-bold hover:bg-[#fef8f3] transition-colors shadow-md"
             >
-              無料で保存する
-              <svg viewBox="0 0 16 16" className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2">
+              30秒で保存する
+              <svg viewBox="0 0 16 16" className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2.5">
                 <path d="M4 8h8M9 5l3 3-3 3" />
               </svg>
             </Link>
-            <p className="text-[10px] opacity-70 mt-3">
-              登録30秒・完全無料・Googleログイン対応
+            <p className="text-[11px] opacity-80 mt-3 flex items-center gap-1.5">
+              <svg viewBox="0 0 16 16" className="w-3 h-3" fill="currentColor">
+                <path d="M8 0a8 8 0 1 0 0 16A8 8 0 0 0 8 0zm3.7 6.3L7 11l-2.7-2.7 1.4-1.4L7 8.2l3.3-3.3 1.4 1.4z" />
+              </svg>
+              完全無料・Googleログイン対応・いつでも削除OK
             </p>
           </div>
         </div>
