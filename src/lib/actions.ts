@@ -120,7 +120,13 @@ export async function getContact(id: string) {
       ],
     },
     include: {
-      records: { orderBy: { date: "desc" } },
+      records: {
+        orderBy: { date: "desc" },
+        include: {
+          returnFor: true,
+          returnedBy: true,
+        },
+      },
     },
   });
 }
@@ -189,7 +195,11 @@ export async function getRecords(groupId?: string | null) {
   return prisma.record.findMany({
     where,
     orderBy: { date: "desc" },
-    include: { contact: true },
+    include: {
+      contact: true,
+      returnFor: true, // この記録が誰のお返しか
+      returnedBy: true, // この記録がどのお返しで返されたか
+    },
   });
 }
 
@@ -277,13 +287,131 @@ export async function deleteRecord(recordId: string) {
         { group: { members: { some: { userId: user.id } } } },
       ],
     },
+    include: {
+      returnFor: true,
+      returnedBy: true,
+    },
   });
   if (!record) throw new Error("記録が見つかりません");
+
+  // この記録が「お返し記録」なら、元の受贈記録を PENDING に戻す
+  if (record.returnForId) {
+    await prisma.record.update({
+      where: { id: record.returnForId },
+      data: { returnStatus: ReturnStatus.PENDING },
+    });
+  }
+
+  // この記録に紐付いたお返し記録があれば、先にそれを削除
+  if (record.returnedBy) {
+    await prisma.record.delete({ where: { id: record.returnedBy.id } });
+  }
 
   await prisma.record.delete({ where: { id: recordId } });
 
   revalidatePath("/dashboard");
   revalidatePath("/dashboard/records");
+  revalidatePath("/dashboard/returns");
+  revalidatePath("/dashboard/contacts");
+}
+
+// お返し記録を作成(受贈記録に紐付く)
+export async function createReturnRecord(
+  receivedRecordId: string,
+  formData: FormData
+) {
+  const user = await ensureUser();
+
+  // 対象の受贈記録を取得(権限チェック込み)
+  const received = await prisma.record.findFirst({
+    where: {
+      id: receivedRecordId,
+      type: RecordType.RECEIVED,
+      OR: [
+        { userId: user.id },
+        { group: { members: { some: { userId: user.id } } } },
+      ],
+    },
+  });
+  if (!received) throw new Error("受贈記録が見つかりません");
+
+  // 既にお返し記録が存在する場合はエラー
+  const existing = await prisma.record.findUnique({
+    where: { returnForId: receivedRecordId },
+  });
+  if (existing) throw new Error("すでにお返し記録があります");
+
+  const amountStr = formData.get("amount") as string;
+  const amount = amountStr ? parseInt(amountStr, 10) : null;
+  const itemName = formData.get("itemName") as string;
+  const date = formData.get("date") as string;
+  const memo = formData.get("memo") as string;
+  const itemCategory = formData.get("itemCategory") as string;
+
+  if (!date) throw new Error("日付は必須です");
+
+  // 現金の場合、itemName が空なら「現金」をセット
+  const finalItemName =
+    itemCategory === "cash" && !itemName ? "現金" : itemName || null;
+
+  // お返し記録を作成(受贈記録の eventType と contact を継承)
+  await prisma.record.create({
+    data: {
+      userId: user.id,
+      groupId: received.groupId,
+      contactId: received.contactId,
+      type: RecordType.GIVEN,
+      eventType: received.eventType,
+      amount,
+      itemName: finalItemName,
+      date: new Date(date),
+      returnStatus: ReturnStatus.NOT_NEEDED,
+      memo: memo || null,
+      returnForId: receivedRecordId,
+    },
+  });
+
+  // 元の受贈記録を COMPLETED に
+  await prisma.record.update({
+    where: { id: receivedRecordId },
+    data: { returnStatus: ReturnStatus.COMPLETED },
+  });
+
+  revalidatePath("/dashboard");
+  revalidatePath("/dashboard/records");
+  revalidatePath("/dashboard/returns");
+  revalidatePath("/dashboard/contacts");
+}
+
+// お返しを取り消す (お返し記録を削除して受贈記録を PENDING に戻す)
+export async function undoReturn(receivedRecordId: string) {
+  const user = await ensureUser();
+
+  const received = await prisma.record.findFirst({
+    where: {
+      id: receivedRecordId,
+      OR: [
+        { userId: user.id },
+        { group: { members: { some: { userId: user.id } } } },
+      ],
+    },
+    include: { returnedBy: true },
+  });
+  if (!received) throw new Error("受贈記録が見つかりません");
+
+  if (received.returnedBy) {
+    await prisma.record.delete({ where: { id: received.returnedBy.id } });
+  }
+
+  await prisma.record.update({
+    where: { id: receivedRecordId },
+    data: { returnStatus: ReturnStatus.PENDING },
+  });
+
+  revalidatePath("/dashboard");
+  revalidatePath("/dashboard/records");
+  revalidatePath("/dashboard/returns");
+  revalidatePath("/dashboard/contacts");
 }
 
 export async function updateReturnStatus(recordId: string, status: string) {

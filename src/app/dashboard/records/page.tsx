@@ -48,15 +48,17 @@ export default async function RecordsPage({
         />
       ) : (
         <div className="border-t border-[#3a2519]/20">
-          {records.map((record, i) => (
+          {records.map((record, i) => {
+            const isReturn = !!record.returnForId;
+            return (
             <div
               key={record.id}
-              className="group grid grid-cols-12 gap-3 md:gap-4 py-5 md:py-6 border-b border-[#3a2519]/12 hover:bg-[#fef8f3]/60 transition-colors"
+              className={`group grid grid-cols-12 gap-3 md:gap-4 py-5 md:py-6 border-b border-[#3a2519]/12 hover:bg-[#fef8f3]/60 transition-colors ${isReturn ? "bg-[#fef8f3]/30" : ""}`}
             >
               <div className="col-span-1 font-latin text-[11px] text-[#7a6050] pt-1 tabular-nums">
-                {String(i + 1).padStart(3, "0")}
+                {isReturn ? "↳" : String(i + 1).padStart(3, "0")}
               </div>
-              <div className="col-span-7 md:col-span-6 flex items-start gap-3">
+              <div className={`col-span-7 md:col-span-6 flex items-start gap-3 ${isReturn ? "md:pl-4" : ""}`}>
                 <span
                   className={`font-display text-xs font-medium px-2 py-0.5 mt-0.5 shrink-0 ${
                     record.type === "RECEIVED"
@@ -68,10 +70,16 @@ export default async function RecordsPage({
                 </span>
                 <div className="min-w-0 flex-1">
                   <p className="font-display text-base md:text-lg font-[500] text-[#3a2519] leading-snug">
+                    {isReturn && (
+                      <span className="font-latin text-[10px] italic uppercase tracking-wider text-[#c4826e] mr-2">
+                        Return ·
+                      </span>
+                    )}
                     {record.contact.name}
                   </p>
                   <p className="font-body text-[11px] md:text-xs text-[#7a6050] mt-1">
                     {record.eventType}
+                    {isReturn && "のお返し"}
                     {record.itemName ? ` ・ ${record.itemName}` : ""}
                     {" ・ "}
                     <span className="font-latin italic">
@@ -92,26 +100,27 @@ export default async function RecordsPage({
                       ? `¥${record.amount.toLocaleString()}`
                       : "金額不明"}
                   </p>
-                  {record.returnStatus === "COMPLETED" && (
+                  {!isReturn && record.returnStatus === "COMPLETED" && (
                     <p className="font-latin text-[10px] italic text-[#5a9e6f] mt-0.5">
                       returned
                     </p>
                   )}
-                  {record.returnStatus === "PENDING" && (
+                  {!isReturn && record.returnStatus === "PENDING" && (
                     <p className="font-latin text-[10px] italic text-[#c4826e] mt-0.5">
                       pending
                     </p>
                   )}
                 </div>
                 <div className="flex flex-col items-end gap-1.5">
-                  {record.returnStatus === "PENDING" && (
+                  {!isReturn && record.returnStatus === "PENDING" && (
                     <ReturnStatusToggle recordId={record.id} />
                   )}
                   <DeleteRecordButton recordId={record.id} />
                 </div>
               </div>
             </div>
-          ))}
+            );
+          })}
         </div>
       )}
     </div>

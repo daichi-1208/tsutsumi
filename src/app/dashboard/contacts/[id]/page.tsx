@@ -110,13 +110,15 @@ export default async function ContactDetailPage({
           </p>
         ) : (
           <div className="border-t border-[#3a2519]/20">
-            {contact.records.map((record, i) => (
+            {contact.records.map((record, i) => {
+              const isReturn = !!record.returnForId; // お返し記録かどうか
+              return (
               <div
                 key={record.id}
-                className="grid grid-cols-12 gap-3 py-5 border-b border-[#3a2519]/12"
+                className={`grid grid-cols-12 gap-3 py-5 border-b border-[#3a2519]/12 ${isReturn ? "pl-6 md:pl-8 bg-[#fef8f3]/30" : ""}`}
               >
                 <div className="col-span-1 font-latin text-[11px] text-[#7a6050] pt-1 tabular-nums">
-                  {String(i + 1).padStart(2, "0")}
+                  {isReturn ? "↳" : String(i + 1).padStart(2, "0")}
                 </div>
                 <div className="col-span-7 flex items-start gap-3">
                   <span
@@ -130,7 +132,17 @@ export default async function ContactDetailPage({
                   </span>
                   <div>
                     <p className="font-display text-sm md:text-base font-[500] text-[#3a2519]">
+                      {isReturn && (
+                        <span className="font-latin text-[10px] italic uppercase tracking-wider text-[#c4826e] mr-2">
+                          Return ·
+                        </span>
+                      )}
                       {record.eventType}
+                      {isReturn && (
+                        <span className="font-body text-xs text-[#7a6050] ml-1">
+                          のお返し
+                        </span>
+                      )}
                       {record.itemName && (
                         <span className="font-body text-xs text-[#7a6050] ml-2">
                           {record.itemName}
@@ -139,8 +151,8 @@ export default async function ContactDetailPage({
                     </p>
                     <p className="font-latin text-[10px] italic text-[#7a6050] mt-0.5">
                       {record.date.toLocaleDateString("ja-JP")}
-                      {record.returnStatus === "PENDING" && " ・ pending"}
-                      {record.returnStatus === "COMPLETED" && " ・ returned"}
+                      {!isReturn && record.returnStatus === "PENDING" && " ・ pending"}
+                      {!isReturn && record.returnStatus === "COMPLETED" && " ・ returned"}
                     </p>
                   </div>
                 </div>
@@ -152,7 +164,8 @@ export default async function ContactDetailPage({
                   </span>
                 </div>
               </div>
-            ))}
+              );
+            })}
           </div>
         )}
       </section>

@@ -86,11 +86,16 @@ model Record {
   returnDueDate DateTime?    @map("return_due_date") @db.Date
   returnAmount  Int?         @map("return_amount")
   memo          String?
+  // もらった記録に対するお返しとして登録された記録の場合、
+  // 元のもらった記録のIDを保持する (RECEIVED → GIVEN のペアリング)
+  returnForId   String?      @unique @map("return_for_id")
   createdAt     DateTime     @default(now()) @map("created_at")
 
-  user    User    @relation(fields: [userId], references: [id])
-  group   Group?  @relation(fields: [groupId], references: [id])
-  contact Contact @relation(fields: [contactId], references: [id])
+  user      User    @relation(fields: [userId], references: [id])
+  group     Group?  @relation(fields: [groupId], references: [id])
+  contact   Contact @relation(fields: [contactId], references: [id])
+  returnFor Record? @relation("ReturnLink", fields: [returnForId], references: [id])
+  returnedBy Record? @relation("ReturnLink")
 
   @@map("records")
 }
